@@ -380,9 +380,9 @@
           <GroupName>start_up</GroupName>
           <Files>
             <File>
-              <FileName>startup_boot_cm32gpm3.s</FileName>
+              <FileName>startup_cm32gpm3.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\project_common\startup_boot_cm32gpm3.s</FilePath>
+              <FilePath>..\..\..\src\StartUP\startup_cm32gpm3.s</FilePath>
             </File>
           </Files>
         </Group>
