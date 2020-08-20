@@ -22,10 +22,10 @@
 /*
  * Server Configuration Declaration
  */
- 
+
 volatile static u16_t primary_addr;
 volatile static u16_t primary_net_idx;
-extern void set_led_color(uint8_t r, uint8_t g, uint8_t b);    
+extern void set_led_color(uint8_t r, uint8_t g, uint8_t b);
 
 
 #define INVALID_HANDLE (0xffff)
@@ -34,7 +34,7 @@ static uint16_t OTA_CONN_HANDLE = INVALID_HANDLE;
 static uint16_t temp_OTA_CONN_HANDLE = INVALID_HANDLE;
 
 void kb_report_trigger_send(uint8_t keynum);
- 
+
 #ifdef USE_OOB
 static int output_number(bt_mesh_output_action_t action, u32_t number)
 {
@@ -58,19 +58,19 @@ static void prov_complete(u16_t net_idx, u16_t addr)
     primary_addr = addr;
     primary_net_idx = net_idx;
 		//to notify the light model
-    light_provsioned_complete();   
+    light_provsioned_complete();
 		set_mesh_sleep_duration(150);
     set_flag_for_adv_sent(0); 	// 0：start   1：stop
- 
-#if BOARD_V2    
+
+#if BOARD_V2
     GIO_SetDirection(PIN_SDI, GIO_DIR_OUTPUT);
-    GIO_WriteValue(PIN_SDI, 0);    
+    GIO_WriteValue(PIN_SDI, 0);
 #endif
     //if not set the light status ,set here
-extern bool light_status_set;    
+extern bool light_status_set;
     if(!light_status_set)
     {
-        set_led_color(50, 50, 50);   
+        set_led_color(50, 50, 50);
         light_status_set = false;
     }
 }
@@ -79,7 +79,7 @@ static void prov_reset(void)
 {
     bt_mesh_prov_enable((bt_mesh_prov_bearer_t)(BT_MESH_PROV_ADV | BT_MESH_PROV_GATT));
 		printf("node reset\n");
-    set_flag_for_adv_sent(0); 
+    set_flag_for_adv_sent(0);
 }
 
 #define MYNEWT_VAL_BLE_MESH_DEV_UUID             	((uint8_t[16]){0xA8,0x01,0x61,0x00,0x04,0x20,0x30,0x75,0x9a,0x00,0x07,0xda,0x78,0x00,0x00,0x00})
@@ -110,9 +110,9 @@ static const struct bt_mesh_prov prov = {
 };
 
 void model_init()
-{    
-    extern void nimble_port_init(void);    
-    nimble_port_init();    
+{
+    extern void nimble_port_init(void);
+    nimble_port_init();
     init_pub();
     printf("begin to setup comp\n");
     model_info_pub();
@@ -129,7 +129,7 @@ uint16_t att_read_callback(hci_con_handle_t connection_handle, uint16_t att_hand
 hci_con_handle_t handle_send;
 btstack_packet_callback_registration_t hci_event_callback_registration;
 
-int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t transaction_mode, 
+int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t transaction_mode,
                               uint16_t offset,const uint8_t *buffer, uint16_t buffer_size)
 {
     handle_send = connection_handle;
@@ -147,19 +147,19 @@ const uint8_t adv_data[] = {
     //32bits complete service UUIDs
     0x08, 0x0b,'I','N','G','-','O','T','A',
 };
- 
+
 //#ifndef DEV_BOARD
 
 #define USER_MSG_ID_REQUEST_SEND_KB1               2
 #define USER_MSG_ID_REQUEST_SEND_KB2               3
 void kb_report_trigger_send(uint8_t key)
-{ 
+{
     btstack_push_user_msg(key, NULL, 0);// 发送给controller 按键trigger触发
 }
 
 uint8_t kb_notify_enable;
 void kb_state_changed(uint8_t key)
-{ 
+{
 	if(key==1)
 	{
         kb_report_trigger_send(USER_MSG_ID_REQUEST_SEND_KB1);
@@ -172,19 +172,19 @@ void kb_state_changed(uint8_t key)
 //#endif
 
 uint8_t addr2[8]={0x01,0x01,0x01,0x04,0x05,0x06};
-uint8_t att_db_storage[800]; 
-uint8_t vnd_msg[4]={0xcf,0x09,0xF0,0x23};	
+uint8_t att_db_storage[800];
+uint8_t vnd_msg[4]={0xcf,0x09,0xF0,0x23};
 
 extern u8_t gen_onoff_state;
 static void user_msg_handler(uint32_t msg_id, void *data, uint16_t size)
-{ 
+{
     uint8_t  key_status = 0;
     switch (msg_id)
     {
 //	#ifndef DEV_BOARD
-        case USER_MSG_ID_REQUEST_SEND_KB1: 
+        case USER_MSG_ID_REQUEST_SEND_KB1:
             if(service_is_ready(0))   //here use app_idx =0;
-            {   
+            {
                 extern struct bt_mesh_model root_models[];
                 uint8_t msg[3]={0x00,0x00,0x00};
                 app_request_t pmsg ={0};
@@ -198,50 +198,50 @@ static void user_msg_handler(uint32_t msg_id, void *data, uint16_t size)
                 pmsg.dst = 0x015e;	//the genie addr ID  X1=00DA   R1=015E
                 pmsg.opcode = BT_MESH_MODEL_OP_2(0x82, 0x04);// Generic OnOff Status  opcode 0x8204
                 if(1 == gen_onoff_state)
-                { 
-                    key_status=0; 
-                    gen_onoff_state=0; 
-                    set_led_color(0,0,0); 
+                {
+                    key_status=0;
+                    gen_onoff_state=0;
+                    set_led_color(0,0,0);
                 }
-                else 
+                else
                 {
                     gen_onoff_state=1;
-                    key_status=1;  
-                    set_led_color(50,50,50); 
+                    key_status=1;
+                    set_led_color(50,50,50);
                 }
                 memset(msg,key_status,sizeof(msg));
                 memcpy(pmsg.msg,msg,3);
                 pmsg.len =3;
-                pmsg.bear =1; 
+                pmsg.bear =1;
                 mesh_service_trigger((uint8_t*)&pmsg,sizeof(app_request_t));
-                printf("mesh service trigger 0x8204 light status !!\r\n"); 
-             }         
-				break; 
-					
-        case USER_MSG_ID_REQUEST_SEND_KB2: 
+                printf("mesh service trigger 0x8204 light status !!\r\n");
+             }
+				break;
+
+        case USER_MSG_ID_REQUEST_SEND_KB2:
             if(service_is_ready(0))    //here use app_idx =0;
-            {   
+            {
                 extern struct bt_mesh_model vnd_models[];
-                //Attr name:0x09f0    复位event 0x23 
+                //Attr name:0x09f0    复位event 0x23
                 app_request_t pmsg ={0};
                 pmsg.model = get_model_by_id(0x01A8);						//&alibaba_models[0];
                 if(!pmsg.model)
                 {
                     printf("model not exist\n");
                     return;
-                }                
+                }
                 pmsg.app_idx = 0;
                 pmsg.dst = 0xF000;    //the address of genie
-                pmsg.opcode = BT_MESH_MODEL_OP_3(0xD4, 0x01A8); 
+                pmsg.opcode = BT_MESH_MODEL_OP_3(0xD4, 0x01A8);
                 vnd_msg[0]++;
                 memcpy(pmsg.msg,vnd_msg,4);
                 pmsg.len  =4;
                 pmsg.bear =1;
-                mesh_service_trigger((uint8_t*)&pmsg,sizeof(app_request_t));				 
-                printf("mesh service trigger Hardrest event 0x23!!\r\n"); 
+                mesh_service_trigger((uint8_t*)&pmsg,sizeof(app_request_t));
+                printf("mesh service trigger Hardrest event 0x23!!\r\n");
             }
-                break; 
-					
+                break;
+
 			case USER_MSG_MESH_INIT_DONE:
 					//to do something here after mesh initialized.
 					//setup mesh task sleep duration after adv package sent to HOST.here to setup 20MS.
@@ -256,21 +256,21 @@ static void user_msg_handler(uint32_t msg_id, void *data, uint16_t size)
 void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *packet, uint16_t size)
 {
     uint8_t event = hci_event_packet_get_type(packet);
-    const btstack_user_msg_t *p_user_msg;    
-    uint8_t addr[] = {6, 5, 4, 0, 0, 0};    
+    const btstack_user_msg_t *p_user_msg;
+    uint8_t addr[] = {6, 5, 4, 0, 0, 0};
     if (packet_type != HCI_EVENT_PACKET) return;
     switch (event)
-    { 
+    {
         case BTSTACK_EVENT_STATE:
             if (btstack_event_state_get_state(packet) != HCI_STATE_WORKING)
                     break;
             if(!is_provisioned_poweron())
             {
-                unbind_light_mode_run(BREATH_MODE_DURATION); //	breath mode once not provisoned. 
+                unbind_light_mode_run(BREATH_MODE_DURATION); //	breath mode once not provisoned.
                 set_flag_for_adv_sent(0);
                 set_mesh_sleep_duration(80);
             }
-            gap_set_random_device_address(addr);  				
+            gap_set_random_device_address(addr);
             gap_set_adv_set_random_addr(OTA_ADV_HANDLE, addr2);
             gap_set_ext_adv_para(OTA_ADV_HANDLE,                            // ota use ADV_SET 5
                                     CONNECTABLE_ADV_BIT | SCANNABLE_ADV_BIT | LEGACY_PDU_BIT,
@@ -291,7 +291,7 @@ void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *p
                     ext_adv_set_en_t adv_set;
             adv_set.handle = OTA_ADV_HANDLE;
             adv_set.duration = 0;
-            adv_set.max_events=0;       
+            adv_set.max_events=0;
             gap_set_ext_adv_enable(1,1,&adv_set);
 
             if(service_is_ready(0))
@@ -307,7 +307,7 @@ void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *p
                 pmsg.len =20;
                 pmsg.bear =1;
                 mesh_service_trigger((uint8_t*)&pmsg,sizeof(app_request_t));
-            }   
+            }
             break;
 
         case HCI_EVENT_LE_META:
@@ -318,10 +318,10 @@ void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *p
                     break;
                 case HCI_SUBEVENT_LE_ADVERTISING_SET_TERMINATED:
                     if ((OTA_ADV_HANDLE == packet[4]) && (temp_OTA_CONN_HANDLE != INVALID_HANDLE))
-                    {       
+                    {
                         OTA_CONN_HANDLE = temp_OTA_CONN_HANDLE;
-                        att_set_db(OTA_CONN_HANDLE,att_db_storage);                 
-                        att_server_init(att_read_callback,att_write_callback);   
+                        att_set_db(OTA_CONN_HANDLE,att_db_storage);
+                        att_server_init(att_read_callback,att_write_callback);
                         printf("OTA_SERVICE connected\n");
                     }
                     break;
@@ -348,8 +348,8 @@ void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *p
 
         case BTSTACK_EVENT_USER_MSG:
                 p_user_msg = hci_event_packet_get_user_msg(packet);
-                user_msg_handler(p_user_msg->msg_id, p_user_msg->data, p_user_msg->len);    
-                break;    
+                user_msg_handler(p_user_msg->msg_id, p_user_msg->data, p_user_msg->len);
+                break;
         default:
                 break;
     }
@@ -374,21 +374,22 @@ ota_ver_t this_version =
 unsigned char pub_addr[] = {6,5,4,1,1,1,};
 
 #endif
-kb_report_t report = 
-{ 
+kb_report_t report =
+{
     .modifier = 0,
-    .reserved = 0,    
+    .reserved = 0,
     .codes = {0}
 };
 
 #define gatt_service_generic_attribute                  0x1801
+
  uint8_t *init_service()
 {
 //	static char dev_name[] = "OTA_SRV";
 //	static uint8_t service_changed[] = {0x00,0x00,0x00,0x00};
     sysSetPublicDeviceAddr(addr);
     att_db_util_init(att_db_storage, sizeof(att_db_storage));
-    ota_init_service();
+    ota_init_service(&this_version);
     return att_db_storage;//att_db_util_get_address();
 }
 
