@@ -335,7 +335,7 @@
               <MiscControls>--gnu</MiscControls>
               <Define>USE_STDPERIPH_DRIVER,OTA_ENABLE=1,FLASH_ENABLE=1,HCI_ACL_PAYLOAD_SIZE=120,BOARD_V2</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\..\bundles\typical\inc;..\..\..\bundles\typical\inc\os;..\..\..\bundles\typical\inc\os\portable\RVDS\ARM_CM3;..\..\..\src\BSP;..\..\..\src\FWlib;..\..\..\src\StartUP;..\..\..\src\Tools;..\..\..\src\Mesh;.\src</IncludePath>
+              <IncludePath>.\src;..\..\project_common;..\..\..\bundles\typical\inc;..\..\..\bundles\typical\inc\os;..\..\..\bundles\typical\inc\os\portable\RVDS\ARM_CM3;..\..\..\src\BSP;..\..\..\src\FWlib;..\..\..\src\StartUP;..\..\..\src\Tools;..\..\..\src\Mesh</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -497,22 +497,22 @@
             <File>
               <FileName>mesh_srv.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\src\Mesh\mesh_srv.c</FilePath>
+              <FilePath>..\Mesh\mesh_srv.c</FilePath>
             </File>
             <File>
               <FileName>device_composition.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\src\Mesh\device_composition.c</FilePath>
+              <FilePath>..\Mesh\device_composition.c</FilePath>
             </File>
             <File>
               <FileName>state_binding.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\src\Mesh\state_binding.c</FilePath>
+              <FilePath>..\Mesh\state_binding.c</FilePath>
             </File>
             <File>
               <FileName>transition.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\src\Mesh\transition.c</FilePath>
+              <FilePath>..\Mesh\transition.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -523,6 +523,21 @@
               <FileName>Mesh.lib</FileName>
               <FileType>4</FileType>
               <FilePath>..\..\..\meshlib\Mesh.lib</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>project_common</GroupName>
+          <Files>
+            <File>
+              <FileName>bt_cmd_data_uart_io_adp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\project_common\bt_cmd_data_uart_io_adp.c</FilePath>
+            </File>
+            <File>
+              <FileName>bt_cmd_parse.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\project_common\bt_cmd_parse.c</FilePath>
             </File>
           </Files>
         </Group>

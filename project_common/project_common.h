@@ -30,6 +30,21 @@
     #define USR_UART_IO_PORT APB_UART1
 #endif
 
+#define CMD_IO_PORT_BUF_LEN 80
+
+#define BT_PRIVT_OK 0
+#define BT_PRIVT_ERROR -1
+#define BT_PRIVT_NO_CMD -2
+#define BT_PRIVT_TIMEOUT -3
+
+#define BT_PRIVT_TRUE 1
+#define BT_PRIVT_FALSE 0
+
+#define BT_PRIVT_ENABLE 1
+#define BT_PRIVT_DISNABLE 0
+
+#define BT_PRIVT_NULL 0
+
 #if defined __cplusplus
     }
 #endif
