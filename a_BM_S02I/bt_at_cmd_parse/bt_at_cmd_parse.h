@@ -31,13 +31,6 @@
 
 #define BT_AT_CMD_TTM_END_CHAR '\r'
 
-typedef int (*pfunbt_at_cmd_parse)(const char *str_in, int str_in_len, char *str_out, int str_out_len);
-
-typedef struct {
-    char *cmd;
-    pfunbt_at_cmd_parse fun;
-} bt_at_cmd_parse_fun_t;
-
 int bt_at_cmd_parse_ttm(const char *str_in, int str_in_len, char *str_out, int str_out_len);
 
 int bt_at_cmd_parse_ttm_cit(const char *str_in, int str_in_len, char *str_out, int str_out_len);

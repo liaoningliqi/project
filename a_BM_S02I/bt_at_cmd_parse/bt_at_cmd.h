@@ -198,12 +198,12 @@ int bt_bm_module_gatt_write_callback(uint16_t cmd, uint16_t offset, const uint8_
 void bt_bm_module_send_data(void);
 void bt_bm_module_gpio_in_service_send_msg(void);
 
-int bt_at_cmd_uart_out_string_with_end_char(const char *data);
 int bt_at_cmd_uart_out_data(const unsigned char *data, int data_len);
 
 void bt_at_cmd_parse_send_data_by_ble(const char *str_in, int str_in_len);
 
 void bt_bm_module_evt_1s_timer_task(void);
+void bt_at_cmd_parse_init(void);
 
 #if defined __cplusplus
     }

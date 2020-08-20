@@ -16,6 +16,7 @@
 #include "ingsoc.h"
 
 #include "project_common.h"
+#include "bt_cmd_parse.h"
 
 #if defined __cplusplus
     extern "C" {

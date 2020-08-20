@@ -15,67 +15,10 @@
     extern "C" {
 #endif
 
-#define BT_AT_CMD_TTM "TTM:"
+static bt_at_cmd_parse_fun_t *cmd_root = BT_PRIVT_NULL;
+static int cmd_root_num = 0;
+static pfun_bt_cmd_data_uart_data_process_t bt_cmd_data_uart_data_process_fun = BT_PRIVT_NULL;
 
-#define BT_AT_CMD_TTM_CIT "CIT-"
-#define BT_AT_CMD_TTM_NAM "NAM-"
-#define BT_AT_CMD_TTM_REN "REN-"
-#define BT_AT_CMD_TTM_BPS "BPS-"
-#define BT_AT_CMD_TTM_MAC "MAC-"
-#define BT_AT_CMD_TTM_RST "RST-"
-#define BT_AT_CMD_TTM_ADP "ADP-"
-#define BT_AT_CMD_TTM_ADD "ADD-"
-#define BT_AT_CMD_TTM_PID "PID-"
-#define BT_AT_CMD_TTM_TPL "TPL-"
-#define BT_AT_CMD_TTM_EUP "EUP-"
-#define BT_AT_CMD_TTM_RSI "RSI-"
-#define BT_AT_CMD_TTM_RTC "RTC-"
-#define BT_AT_CMD_TTM_CDL "CDL-"
-
-#define BT_AT_CMD_TTM_RST_SYS "SYSTEMRESET"
-
-#define BT_AT_CMD_TTM_EUP_ON "ON"
-#define BT_AT_CMD_TTM_EUP_OFF "OFF"
-
-#define BT_AT_CMD_TTM_RSI_ON "ON"
-#define BT_AT_CMD_TTM_RSI_OFF "OFF"
-
-#define BT_AT_CMD_TTM_BPS_SET "BPS SET AFTER 2S...\r\n\0"
-
-static bt_at_cmd_parse_fun_t cmd_root[] = {
-    {BT_AT_CMD_TTM, bt_at_cmd_parse_temp},
-};
-static int cmd_root_num = sizeof(cmd_root) / sizeof(cmd_root[0]);
-
-static bt_at_cmd_parse_fun_t cmd_ttm[] = {
-    {BT_AT_CMD_TTM_CIT, bt_at_cmd_parse_temp},
-    {BT_AT_CMD_TTM_NAM, bt_at_cmd_parse_temp},
-    {BT_AT_CMD_TTM_REN, bt_at_cmd_parse_temp},
-    {BT_AT_CMD_TTM_BPS, bt_at_cmd_parse_temp},
-    {BT_AT_CMD_TTM_MAC, bt_at_cmd_parse_temp},
-    {BT_AT_CMD_TTM_RST, bt_at_cmd_parse_temp},
-    {BT_AT_CMD_TTM_ADP, bt_at_cmd_parse_temp},
-    {BT_AT_CMD_TTM_ADD, bt_at_cmd_parse_temp},
-    {BT_AT_CMD_TTM_PID, bt_at_cmd_parse_temp},
-    {BT_AT_CMD_TTM_TPL, bt_at_cmd_parse_temp},
-    {BT_AT_CMD_TTM_EUP, bt_at_cmd_parse_temp},
-    {BT_AT_CMD_TTM_RSI, bt_at_cmd_parse_temp},
-    {BT_AT_CMD_TTM_RTC, bt_at_cmd_parse_temp},
-    {BT_AT_CMD_TTM_CDL, bt_at_cmd_parse_temp},
-};
-static int cmd_ttm_num = sizeof(cmd_ttm) / sizeof(cmd_ttm[0]);
-
-static bt_at_cmd_parse_fun_t cmd_ttm_eup[] = {
-    {BT_AT_CMD_TTM_EUP_ON, bt_at_cmd_parse_temp},
-    {BT_AT_CMD_TTM_EUP_OFF, bt_at_cmd_parse_temp},
-};
-static int cmd_ttm_eup_num = sizeof(cmd_ttm_eup) / sizeof(cmd_ttm_eup[0]);
-
-static bt_at_cmd_parse_fun_t cmd_ttm_rsi[] = {
-    {BT_AT_CMD_TTM_RSI_ON, bt_at_cmd_parse_temp},
-    {BT_AT_CMD_TTM_RSI_OFF, bt_at_cmd_parse_temp},
-};
-static int cmd_ttm_rsi_num = sizeof(cmd_ttm_rsi) / sizeof(cmd_ttm_rsi[0]);
 
 unsigned int bt_at_cmd_parse_is_match(const char *str_in, int str_in_len, char *str_in_cmd)
 {
@@ -98,13 +41,15 @@ unsigned int bt_at_cmd_parse_is_match(const char *str_in, int str_in_len, char *
     return BT_PRIVT_FALSE;
 }
 
-int bt_at_cmd_parse_temp(const char *str_in, int str_in_len, char *str_out, int str_out_len)
-{
-    return BT_PRIVT_OK;
-}
-
 void bt_cmd_data_uart_data_process(const char *str_in, int str_in_len)
 {
+    if (bt_cmd_data_uart_data_process_fun == BT_PRIVT_NULL) {
+        return;
+    }
+
+    bt_cmd_data_uart_data_process_fun(str_in, str_in_len);
+    dbg_printf("uart data process\r\n");
+
     return;
 }
 
@@ -112,7 +57,7 @@ int bt_cmd_data_uart_cmd_parse(const char *str_in, int str_in_len, char *str_out
 {
     int cmd_index;
 
-    if ((str_in == BT_PRIVT_NULL) || (str_out == BT_PRIVT_NULL)) {
+    if ((str_in == BT_PRIVT_NULL) || (str_out == BT_PRIVT_NULL) || (cmd_root == BT_PRIVT_NULL)) {
         return BT_PRIVT_ERROR;
     }
 
@@ -135,6 +80,19 @@ int bt_cmd_data_uart_cmd_parse(const char *str_in, int str_in_len, char *str_out
     strncpy(str_out, BT_AT_CMD_TTM_PARSE_NO_CMD, str_out_len);
     dbg_printf("output: %s\r\n", str_out);
     return BT_PRIVT_ERROR;
+}
+
+int bt_cmd_data_uart_cmd_parse_register(bt_at_cmd_parse_fun_t *cmd, int cmd_num, pfun_bt_cmd_data_uart_data_process_t fun)
+{
+    if (cmd == BT_PRIVT_NULL || cmd_num == 0) {
+        return BT_PRIVT_ERROR;
+    }
+
+    cmd_root = cmd;
+    cmd_root_num = cmd_num;
+    bt_cmd_data_uart_data_process_fun = fun;
+
+    return BT_PRIVT_OK;
 }
 
 #if defined __cplusplus

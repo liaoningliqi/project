@@ -13,6 +13,8 @@
 #include "bt_at_cmd_sdk_adp.h"
 #include "bt_bm_module_gatt_callback.h"
 
+#include "../../project_common/project_common.h"
+
 #if defined __cplusplus
     extern "C" {
 #endif
@@ -78,27 +80,6 @@ static bt_at_cmd_parse_fun_t cmd_ttm_rsi[] = {
     {BT_AT_CMD_TTM_RSI_OFF, bt_at_cmd_parse_ttm_rsi_off},
 };
 static int cmd_ttm_rsi_num = sizeof(cmd_ttm_rsi) / sizeof(cmd_ttm_rsi[0]);
-
-unsigned int bt_at_cmd_parse_is_match(const char *str_in, int str_in_len, char *str_in_cmd)
-{
-    int char_index = 0;
-
-    while ((str_in[char_index] != '\0') && (str_in_cmd[char_index] != '\0')) {
-        if (char_index >= str_in_len) {
-            break;
-        }
-        if (str_in[char_index] != str_in_cmd[char_index]) {
-            break;
-        }
-        char_index++;
-    }
-
-    if (str_in_cmd[char_index] == '\0') {
-        return BT_PRIVT_TRUE;
-    }
-
-    return BT_PRIVT_FALSE;
-}
 
 int bt_at_cmd_parse_ttm(const char *str_in, int str_in_len, char *str_out, int str_out_len)
 {
@@ -863,33 +844,10 @@ void bt_at_cmd_parse_send_data_by_ble(const char *str_in, int str_in_len)
     return;
 }
 
-int bt_at_cmd_parse(const char *str_in, int str_in_len, char *str_out, int str_out_len)
+void bt_at_cmd_parse_init()
 {
-    int cmd_index;
-
-    if ((str_in == BT_PRIVT_NULL) || (str_out == BT_PRIVT_NULL)) {
-        return BT_PRIVT_ERROR;
-    }
-
-    if ((str_in_len < 0) || (str_out_len < 0)) {
-        return BT_PRIVT_ERROR;
-    }
-
-    dbg_printf("input cmd: %s len: %d\r\n", str_in, str_in_len);
-    for (cmd_index = 0; cmd_index < cmd_root_num; cmd_index++) {
-        if (bt_at_cmd_parse_is_match(str_in, str_in_len, cmd_root[cmd_index].cmd) &&
-            (cmd_root[cmd_index].fun != BT_PRIVT_NULL)) {
-            cmd_root[cmd_index].fun(str_in, str_in_len, str_out, str_out_len);
-            dbg_printf("output: %s\r\n", str_out);
-            return BT_PRIVT_OK;
-        }
-    }
-
-    bt_at_cmd_parse_send_data_by_ble(str_in, str_in_len);
-
-    strncpy(str_out, BT_AT_CMD_TTM_PARSE_NO_CMD, str_out_len);
-    dbg_printf("output: %s\r\n", str_out);
-    return BT_PRIVT_ERROR;
+    bt_cmd_data_uart_cmd_parse_register(cmd_root, cmd_root_num, (pfun_bt_cmd_data_uart_data_process_t)bt_at_cmd_parse_send_data_by_ble);
+    return;
 }
 
 #if defined __cplusplus

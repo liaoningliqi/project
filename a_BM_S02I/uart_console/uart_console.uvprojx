@@ -500,11 +500,6 @@
               <FilePath>..\bt_at_cmd_parse\bt_at_cmd_sdk_adp.c</FilePath>
             </File>
             <File>
-              <FileName>bt_at_cmd_uart_io_adp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bt_at_cmd_parse\bt_at_cmd_uart_io_adp.c</FilePath>
-            </File>
-            <File>
               <FileName>bt_bm_module_gatt_callback.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\bt_at_cmd_parse\bt_bm_module_gatt_callback.c</FilePath>
@@ -518,6 +513,18 @@
         </Group>
         <Group>
           <GroupName>project_common</GroupName>
+          <Files>
+            <File>
+              <FileName>bt_cmd_data_uart_io_adp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\project_common\bt_cmd_data_uart_io_adp.c</FilePath>
+            </File>
+            <File>
+              <FileName>bt_cmd_parse.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\project_common\bt_cmd_parse.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>::CMSIS</GroupName>
