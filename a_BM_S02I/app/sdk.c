@@ -757,7 +757,7 @@ void sdk_1s_timer_task(void)
         btstack_push_user_msg(USER_MSG_ID_RSSI_SEND, NULL, 0);
     }
 
-    dbg_printf("hi %d\r\n", sdk_gpio_isr_cnt);
+    dbg_printf("hello %d\r\n", sdk_gpio_isr_cnt);
 
     return;
 }
