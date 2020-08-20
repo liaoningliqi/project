@@ -382,17 +382,17 @@
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\main.c</FilePath>
+              <FilePath>..\app\main.c</FilePath>
             </File>
             <File>
               <FileName>profile.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\profile.c</FilePath>
+              <FilePath>..\app\profile.c</FilePath>
             </File>
             <File>
               <FileName>sdk.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\sdk.c</FilePath>
+              <FilePath>..\app\sdk.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -402,7 +402,7 @@
             <File>
               <FileName>startup_ing91800.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\src\startup_ing91800.s</FilePath>
+              <FilePath>..\app\startup_ing91800.s</FilePath>
             </File>
             <File>
               <FileName>symdefs.m</FileName>
@@ -515,6 +515,9 @@
               <FilePath>..\bt_at_cmd_parse\bt_bm_module_gatt_service.c</FilePath>
             </File>
           </Files>
+        </Group>
+        <Group>
+          <GroupName>project_common</GroupName>
         </Group>
         <Group>
           <GroupName>::CMSIS</GroupName>
