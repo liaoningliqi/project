@@ -6,8 +6,8 @@
 /*
  *  btstack_util.h
  *
- *  
- *  
+ *
+ *
  *
  */
 #include <stdio.h>
@@ -72,7 +72,7 @@ void light2save(struct ble_npl_event *ev)
     kv_put(CUST_CONF_FLASH_INDEX,(uint8_t*)&cust_mem,sizeof(cust_mem));
 }
 
-/** 
+/**
  * @brief the mesh stack would call this API to modify the light status ,lightness and etc.
  */
 #define PIN_SDI   GIO_GPIO_0
@@ -80,7 +80,7 @@ extern void set_led_color(uint8_t r, uint8_t g, uint8_t b);
 void update_light_state(void)
 {
 	u32_t power, color;
-    uint32_t cach_value =0; 
+    uint32_t cach_value =0;
 	power = lightness;
     uint8_t ratio = 0;
     uint8_t set_lightness = 0;
@@ -98,30 +98,26 @@ void update_light_state(void)
         set_lightness =  ((uint32_t)(ratio<<8))/100;
         Rv= set_lightness;
         Gv= set_lightness;
-        Bv= set_lightness;        
+        Bv= set_lightness;
         GIO_SetDirection(PIN_SDI, GIO_DIR_OUTPUT);
         GIO_WriteValue(PIN_SDI, 0);
         set_led_color(set_lightness,set_lightness,set_lightness);
         if(last_lightness == lightness)
             goto light_save;
-        return;      
+        return;
 	}
 	else
 	{
-#ifdef BOARD_V2
         GIO_SetDirection(PIN_SDI, GIO_DIR_OUTPUT);
-        GIO_WriteValue(PIN_SDI, 0);         
+        GIO_WriteValue(PIN_SDI, 0);
         set_led_color(0,0,0);
-#else
-        set_led_color(0,0,0);
-#endif
-        goto light_save;       
+        goto light_save;
 	}
-    
+
 light_save:
-#if (FLASH_ENABLE)       
+#if (FLASH_ENABLE)
         cach_value = last_lightness << 16 | GCW<<8 | GWW;
-        printf("write light 0x%x\n",cach_value);        
+        printf("write light 0x%x\n",cach_value);
         cust_mem.lightness = last_lightness;
         cust_mem.temperature =  (GCW<<8 | GWW);
         cust_mem.R = Rv;
@@ -129,12 +125,12 @@ light_save:
         cust_mem.B = Bv;
         cust_mem.status = gen_onoff_state;
         //cached to flash
-        k_delayed_work_submit(&flash_work,500); 
+        k_delayed_work_submit(&flash_work,500);
         return;
-#endif     
+#endif
 }
 
-/** 
+/**
  * @brief callback for the gen_onoff models status check.
  *
  */
@@ -144,7 +140,7 @@ int light_model_gen_onoff_get(struct bt_mesh_model *model, u8_t *state)
 	return 0;
 }
 
-/** 
+/**
  * @brief callback for the gen_onoff models set operation.
  *
  */
@@ -173,10 +169,10 @@ int light_model_gen_level_set(struct bt_mesh_model *model, s16_t level)
     WW = GWW;
     printf("the level is %d\n",level);
 	if ((u16_t)light > 0x0000) {
-#if (LIGHT_TEMP_CIRCUIT==0)       
+#if (LIGHT_TEMP_CIRCUIT==0)
         CW = (GCW==0)? 10:GCW;
         WW = (GWW==0)? 10:GWW;
-#endif        
+#endif
 		gen_onoff_state = 1;
         if(light == 65535)
             lightratio =100;
@@ -206,27 +202,27 @@ int light_model_gen_level_set(struct bt_mesh_model *model, s16_t level)
             CW =100;
         if(WW>100)
             WW =100;
-#endif        
+#endif
         PWM_CONFIG(loc_r,LED_R);
-        PWM_CONFIG(loc_g,LED_G); 
+        PWM_CONFIG(loc_g,LED_G);
         PWM_CONFIG(loc_b,LED_B);
 #if (LIGHT_TEMP_CIRCUIT)
         light_ctl_adjust(WW,CW,light);
-#else        
+#else
         PWM_CONFIG(WW,PWM_WARM);
         PWM_CONFIG(CW,PWM_COLD);
-#endif               
+#endif
         Rv = loc_r;
         Gv = loc_g;
         Bv = loc_b;
         GWW = WW;
         GCW = CW;
-                
+
 	}
 	else if ((u16_t)gen_level_state == 0x0000) {
 		gen_onoff_state = 0;
         Rv=Gv=Bv=0;
-	    update_light_state();        
+	    update_light_state();
 	}
 
 	return 0;
@@ -276,8 +272,8 @@ int light_model_light_HSL_set(struct bt_mesh_model *model,hsl_val_t* val)
 {
     //set the value of HSL to notify the driven
     printk("start\n");
-    HSL_PWM_LED(val->hue,val->sa, val->lightness); 
-    return 0;    
+    HSL_PWM_LED(val->hue,val->sa, val->lightness);
+    return 0;
 }
 
 int light_rgb_set(uint8_t rv ,uint8_t gv,uint8_t bv )
@@ -285,12 +281,12 @@ int light_rgb_set(uint8_t rv ,uint8_t gv,uint8_t bv )
     uint16_t rl,gl,bl;
 //    rl = (rv>=255)?100:(rv*100)>>8;
 //    gl = (gv>=255)?100:(gv*100)>>8;
-//    bl = (bv>=255)?100:(bv*100)>>8;        
+//    bl = (bv>=255)?100:(bv*100)>>8;
     printk("uint8_t %d %d %d\n",rl,gl,bl);
     PWM_CONFIG(rv,LED_R);
     PWM_CONFIG(gv,LED_G);
     PWM_CONFIG(bv,LED_B);
-    return 0;    
+    return 0;
 }
 
 int lingtness_set(uint16_t light)
@@ -299,21 +295,21 @@ int lingtness_set(uint16_t light)
     light1 = light*100>>16;
     PWM_CONFIG(light1,LED_R);
     PWM_CONFIG(light1,LED_G);
-    PWM_CONFIG(light1,LED_B);  
+    PWM_CONFIG(light1,LED_B);
     return 0;
 }
 float Hue_2_RGB( float v1, float v2, float vH ) //Function Hue_2_RGB
 {
     printk("Hue_2_RGB: v1 %f  v2 %f  vH %f\n",v1,v2,vH);
-    if ( vH < 0 ) 
+    if ( vH < 0 )
         vH += 1;
-    if ( vH > 1 ) 
+    if ( vH > 1 )
         vH -= 1;
-    if (( 6.0 * vH ) < 1 ) 
+    if (( 6.0 * vH ) < 1 )
         return ( v1 + ( v2 - v1 ) * 6.0 * vH );
-    if (( 2.0 * vH ) < 1 ) 
+    if (( 2.0 * vH ) < 1 )
         return ( v2 );
-    if (( 3.0 * vH ) < 2 ) 
+    if (( 3.0 * vH ) < 2 )
         return ( v1 + ( v2 - v1 ) * ( ( 2.0/3.0 ) - vH ) * 6.0 );
     return ( v1 );
 }
@@ -341,10 +337,10 @@ void HSL_2_RGB(uint16_t hue,uint16_t sa, uint16_t light )
     {
         if ( L < 0.5 )
             var_2 = L * ( 1 + S );
-        else 
+        else
             var_2 = ( L + S ) - ( S * L );
         var_1 = 2 * L - var_2;
-        printk("var_2 %f var_1 %f \n",var_2,var_1);      
+        printk("var_2 %f var_1 %f \n",var_2,var_1);
         R = Hue_2_RGB( var_1, var_2, H + ( 1.0/3.0 ));
         G = Hue_2_RGB( var_1, var_2, H );
         B = Hue_2_RGB( var_1, var_2, H - ( 1.0/3.0 ));
@@ -373,7 +369,7 @@ uint32_t pwm_value_update(uint8_t VAL,uint8_t PIN )
      if(0==(PIN%2))
        VAL2 =period - VAL*period/100;
      else
-       VAL2 =  VAL*period/100;        
+       VAL2 =  VAL*period/100;
 #else
      if(0==(PIN%2))
        VAL2 = VAL*period/100;
@@ -383,7 +379,7 @@ uint32_t pwm_value_update(uint8_t VAL,uint8_t PIN )
      if(VAL2==256)
          return 255;
      else
-        return VAL2;     
+        return VAL2;
 }
 uint32_t PWM_CONFIG(uint8_t VAL,uint8_t PIN)
 {
@@ -397,15 +393,15 @@ uint32_t PWM_CONFIG(uint8_t VAL,uint8_t PIN)
             VAL2 = period - VAL*period/100;  //low is lighten, high is off,
         else
             VAL2 = VAL*period/100;
-        //printf("wm pin %d\n val VALE SET 0x%x  period 0x%x",PIN,VAL2,period);        
-#else        
+        //printf("wm pin %d\n val VALE SET 0x%x  period 0x%x",PIN,VAL2,period);
+#else
         if (0==PIN %2)
             VAL2 = VAL*period/100;  //low is lighten, high is off,
         else
             VAL2 = period - VAL*period/100;
      //   printf("wm pin %d\n VALE SET 0x%x  period 0x%x",PIN,VAL2,period);
 #endif
-    PWM_SetHighThreshold(PIN   >> 1, 0,VAL2);    
+    PWM_SetHighThreshold(PIN   >> 1, 0,VAL2);
     }
     else   //represent RGB : 0---256)
     {
@@ -413,19 +409,19 @@ uint32_t PWM_CONFIG(uint8_t VAL,uint8_t PIN)
      if(0==(PIN%2))
        VAL2 =255 - VAL;
      else
-       VAL2 = VAL;        
+       VAL2 = VAL;
 #else
      if(0==(PIN%2))
        VAL2 = VAL;
      else
        VAL2 = 255 - VAL;
-#endif   
+#endif
 	// 	printf("pin %d\n VALE SET 0x%x  period 0x%x",PIN,VAL2,period);
-  //  PWM_PIN_CONFIG(PIN,period,VAL2);  
-     if (VAL2==255)     
-         PWM_SetHighThreshold(PIN   >> 1, 0, PERA_THRESHOLD);      
+  //  PWM_PIN_CONFIG(PIN,period,VAL2);
+     if (VAL2==255)
+         PWM_SetHighThreshold(PIN   >> 1, 0, PERA_THRESHOLD);
      else
-         PWM_SetHighThreshold(PIN   >> 1, 0, VAL2);  
+         PWM_SetHighThreshold(PIN   >> 1, 0, VAL2);
     }
     return 0;
 }
@@ -435,7 +431,7 @@ uint32_t PWM_CONFIG(uint8_t VAL,uint8_t PIN)
 //static s16_t local_deluv;     //0x8000--0x7FFF
 int light_model_ctl_temp_get(struct bt_mesh_model *model,uint16_t *temp , s16_t* deluv, uint16_t* tar_temp, s16_t* tar_deluv, uint8_t* time)
 {
-    
+
 	return 0;
 }
 
@@ -453,10 +449,10 @@ void light_ctl_adjust(uint8_t WW, uint8_t CW,uint16_t light)
     // initial conditional 50% CW, 50% WW
     uint32_t mulrat =0;
     if(WW!=0 || CW !=0)
-    {        
+    {
         GWW = WW;
         GCW = CW;
-    }    
+    }
     uint32_t re = light *100;
     if(light ==65535)
     mulrat =100;
@@ -468,14 +464,14 @@ void light_ctl_adjust(uint8_t WW, uint8_t CW,uint16_t light)
     }
 #if (LIGHT_TEMP_CIRCUIT)
     uint32_t temp_rat =0;
-    uint32_t me = CW*100; 
+    uint32_t me = CW*100;
     if(CW==0 && WW==0 && light==0)  //light all off;
     {
         temp_rat =0;
         mulrat =0;
     }
     else
-    {        
+    {
         temp_rat = me/(CW+WW);
         if( me%100>50 )
             temp_rat+=1;
@@ -487,7 +483,7 @@ void light_ctl_adjust(uint8_t WW, uint8_t CW,uint16_t light)
     PWM_CONFIG(temp1=WW*mulrat/100,PWM_WARM);
     PWM_CONFIG(temp2=CW*mulrat/100,PWM_COLD);
     printf("final state WW %d, CW %d\n",temp1,temp2);
-#endif      
+#endif
 }
 void update_light_ctl(uint16_t light , uint16_t temp, s16_t delua)
 {
@@ -505,7 +501,7 @@ void update_light_ctl(uint16_t light , uint16_t temp, s16_t delua)
         te = (DIS_TEMP-temp+MIN_TEMP)*100 % DIS_TEMP;
         if (te > (DIS_TEMP/2))
             WW +=1;
-        
+
     }
     printf("updated CW %d WW %d\n",CW,WW);
     cur_ctl_temp = temp;
@@ -516,7 +512,7 @@ void update_light_ctl(uint16_t light , uint16_t temp, s16_t delua)
     PWM_CONFIG(Gv,LED_G);
     PWM_CONFIG(Bv,LED_B);
     //to calculate the period  CW and WW
-    light_ctl_adjust(WW,CW,light);    
+    light_ctl_adjust(WW,CW,light);
 }
 
 int light_model_ctl_get(struct bt_mesh_model *model,uint16_t *lightness,uint16_t *temp , uint16_t* tar_lightness, uint16_t* tar_temp, uint8_t* time)
@@ -548,7 +544,7 @@ int light_power_on()
     uint16_t light =0;
     uint8_t  cw=0;
 #if (FLASH_ENABLE)
-    struct cached_data_t  ctword={0};     
+    struct cached_data_t  ctword={0};
     int16_t len;
     uint8_t* db = NULL;
     db = kv_get(CUST_CONF_FLASH_INDEX,&len);
@@ -560,7 +556,7 @@ int light_power_on()
     {
         GCW =50;
         GWW =50;
-        gen_level_state = 32767;      
+        gen_level_state = 32767;
      //   light_reset(65535,50,50);
         //to make  the light change evently
         uint16_t pack_t = (65535- lightstatus >>16)/2000;
@@ -578,14 +574,14 @@ int light_power_on()
         }
         //revert the lightness and temperature from flash.
         last_lightness =  0xffff;
-        temperature = 0;   
+        temperature = 0;
     }
     else
     {
         gen_level_state = (s16_t)((lightstatus&0xffff)-32768);
         printf("last light status 0x%x \n",ctword.status);
         if(ctword.status)
-            set_led_color(50,50,50);               
+            set_led_color(50,50,50);
         else
             set_led_color(0,0,0);
         light_status_set = true;
@@ -615,16 +611,9 @@ int light_reset(uint16_t light, uint8_t cw)
             mulrat+=1;
         }
     }
-#if BOARD_V2
-    uint8_t val = 0; 
-    val = pwm_value_update(mulrat,PIN_SDI);   
+    uint8_t val = 0;
+    val = pwm_value_update(mulrat,PIN_SDI);
     set_led_color(val,val,val);
-#else    
-    uint32_t temp_rat =0;
-    temp_rat = cw;    
-    PWM_CONFIG(mulrat,PWM_COLD);   //CW for LIGHTNESS
-    PWM_CONFIG(temp_rat,PWM_WARM);             //WW for temperatue;
-#endif     
     return 0;
 }
 
@@ -651,11 +640,11 @@ void light_default_var_init(void)
 void light_default_status_init(void)
 {
 	u16_t lightness;
-    //read from the flash,the last value for lightness and light temperature    
+    //read from the flash,the last value for lightness and light temperature
     uint32_t t1 = ((gen_level_state+32768));
     uint32_t t2 = (MIN_TEMP +  DIS_TEMP *(100-GCW)/100);
     last_lightness = t1;
-    light_ctl_srv_user_data.lightness_temp_def = light_ctl_srv_user_data.lightness_temp_last =  (t1<<16) | t2;  
+    light_ctl_srv_user_data.lightness_temp_def = light_ctl_srv_user_data.lightness_temp_last =  (t1<<16) | t2;
     printf("t1 0x%x t2 0x%x 3 0x%x\n",t1,t2,light_ctl_srv_user_data.lightness_temp_last);
 		lightness = (u16_t) (light_ctl_srv_user_data.lightness_temp_last >> 16);
 extern bool last_light_status;
@@ -664,7 +653,7 @@ extern bool last_light_status;
         gen_onoff_srv_root_user_data.target_onoff = STATE_ON;  //added by dengyiyn, for first status check
 	} else {
 		gen_onoff_srv_root_user_data.onoff = STATE_OFF;
-        gen_onoff_srv_root_user_data.target_onoff = STATE_OFF; //added by dengyiyun, for first status check       
+        gen_onoff_srv_root_user_data.target_onoff = STATE_OFF; //added by dengyiyun, for first status check
 	}
 
 	/* Retrieve Default Lightness & Temperature Values */
@@ -676,7 +665,7 @@ extern bool last_light_status;
 		light_ctl_srv_user_data.temp_def = (u16_t)
 			(light_ctl_srv_user_data.lightness_temp_def);
 	}
-    
+
 	light_lightness_srv_user_data.def =
 		light_ctl_srv_user_data.lightness_def;
 
@@ -699,7 +688,7 @@ extern bool last_light_status;
 		light_ctl_srv_user_data.temp_range_min = (u16_t)
 			(light_ctl_srv_user_data.temperature_range);
 	}
-    
+
 	switch (gen_power_onoff_srv_user_data.onpowerup) {
 		case STATE_OFF:
 			gen_onoff_srv_root_user_data.onoff = STATE_OFF;
@@ -715,7 +704,7 @@ extern bool last_light_status;
             gen_level_srv_root_user_data.level = light_lightness_srv_user_data.last - 32768;
 			light_ctl_srv_user_data.temp =
 				(u16_t) (light_ctl_srv_user_data.lightness_temp_last);
-            //add by dengyiyun ,to setup the actual of lightness 
+            //add by dengyiyun ,to setup the actual of lightness
             light_lightness_srv_user_data.actual =  light_lightness_srv_user_data.last;
 			state_binding(ONPOWERUP, ONOFF_TEMP);
 			break;
@@ -727,12 +716,12 @@ extern bool last_light_status;
 
 int model_conf_init()
 {
-    light_default_var_init();   
+    light_default_var_init();
     transition_timers_init();
     light_default_status_init();
     //initialize the flash save work for light work.
-    k_delayed_work_init(&flash_work,light2save);    
-    return 0;    
+    k_delayed_work_init(&flash_work,light2save);
+    return 0;
 }
 
 
@@ -745,13 +734,13 @@ int model_breath_mode()
     GWW =50;
     gen_level_state = 32767;
     uint16_t light = 0;
-    uint32_t count_m,count_n=0;    
+    uint32_t count_m,count_n=0;
     //to make  the light change evently
-    uint16_t pack_t = (65535)/2000;     
+    uint16_t pack_t = (65535)/2000;
     uint16_t pack_cw = 5;
-    //for lightness to darkness 
+    //for lightness to darkness
     if (65535%2000>2000)
-    pack_t+=1;        
+    pack_t+=1;
     for(count_n=0;count_n<2000;count_n++)
     {
         if(count_n==1999)
@@ -763,7 +752,7 @@ int model_breath_mode()
         {
             uint32_t m= pack_t * count_n;
             uint32_t n= pack_cw * (count_n/200);
-            light = (65535> m)? 65535- m:0;            
+            light = (65535> m)? 65535- m:0;
             cw = (50 > n)?50 - n:0;
             cw = (light==0)? 0:50-n;
             if(cw>GCW)
@@ -774,7 +763,7 @@ int model_breath_mode()
         for(count_m=0;count_m<1500;count_m++)
         {
         }
-    } 
+    }
     //from darkness to lightness
     for(count_n=0;count_n<2000;count_n++)
     {
@@ -798,7 +787,7 @@ int model_breath_mode()
         {
         }
     }
-// 	printf("breath cou %d\n",count_x++); 
+// 	printf("breath cou %d\n",count_x++);
     return 0;
 }
 void breath_mode_expire(struct ble_npl_event *work)
@@ -817,7 +806,7 @@ void breath_mode_work(struct ble_npl_event *work)
 {
     if(IS_BREATH_RUN())
     {
-        k_delayed_work_submit(&breath_work,2000); 
+        k_delayed_work_submit(&breath_work,2000);
         model_breath_mode();
     }
     else
@@ -835,7 +824,7 @@ int unbind_light_mode_run(uint32_t duration)
     breath_mode_is_run = TRUE;
     printf("unbind mode start\n");
     return 1;
-    
+
 }
 
 int light_provsioned_complete()
@@ -844,7 +833,7 @@ int light_provsioned_complete()
     {
         breath_mode_is_run =  FALSE;
         k_delayed_work_cancel(&breath_mode);
-        printf("breath mode stopped\n");          
+        printf("breath mode stopped\n");
     }
     return 0;
 }

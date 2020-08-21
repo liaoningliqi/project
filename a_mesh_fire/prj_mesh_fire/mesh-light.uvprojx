@@ -319,7 +319,7 @@
             <PlainCh>0</PlainCh>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
-            <wLevel>1</wLevel>
+            <wLevel>2</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>0</uC99>
@@ -408,6 +408,11 @@
               <FileName>uart_console.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\uart_console.c</FilePath>
+            </File>
+            <File>
+              <FileName>chip_peripherals.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\chip_peripherals.c</FilePath>
             </File>
           </Files>
         </Group>

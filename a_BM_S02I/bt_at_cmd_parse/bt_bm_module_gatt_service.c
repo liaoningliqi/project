@@ -17,6 +17,7 @@
 #include "bt_at_cmd_parse.h"
 #include "bt_bm_module_gatt_service.h"
 #include "bt_bm_module_gatt_callback.h"
+#include "..\..\project_common\project_common.h"
 
 #if defined __cplusplus
     extern "C" {

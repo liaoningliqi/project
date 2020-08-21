@@ -62,10 +62,10 @@ static void prov_complete(u16_t net_idx, u16_t addr)
 		set_mesh_sleep_duration(150);
     set_flag_for_adv_sent(0); 	// 0£ºstart   1£ºstop
 
-#if BOARD_V2
+
     GIO_SetDirection(PIN_SDI, GIO_DIR_OUTPUT);
     GIO_WriteValue(PIN_SDI, 0);
-#endif
+
     //if not set the light status ,set here
 extern bool light_status_set;
     if(!light_status_set)

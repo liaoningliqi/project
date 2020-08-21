@@ -9,6 +9,7 @@
 
 #include "bt_at_cmd.h"
 #include "bt_at_cmd_parse.h"
+#include "..\..\project_common\project_common.h"
 
 #if defined __cplusplus
     extern "C" {

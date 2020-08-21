@@ -17,27 +17,6 @@
     extern "C" {
 #endif
 
-#define DEBUG 1
-#define UART_PORT 0
-//#define ING_CHIPS_PRIVATE_SERVICE 1
-
-#ifndef DEBUG
-    #warning DEBUG should be defined 0 or 1
-    #define DEBUG 0
-#endif
-
-#if (DEBUG == 1)
-    #define dbg_printf(...) printf(__VA_ARGS__)
-#else
-    #define dbg_printf(...)
-#endif
-
-#if (UART_PORT == 0)
-    #define USR_UART_IO_PORT APB_UART0
-#else
-    #define USR_UART_IO_PORT APB_UART1
-#endif
-
 #define STRUCT_TM_YEAR_BASE_LINE 1900
 #define STRUCT_TM_MONTH_BASE_LINE 1
 
