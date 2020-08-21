@@ -56,6 +56,7 @@ typedef struct {
 void bt_cmd_data_uart_io_init(void);
 unsigned int bt_at_cmd_parse_is_match(const char *str_in, int str_in_len, char *str_in_cmd);
 int bt_cmd_data_uart_out_string_with_end_char(const char *data);
+void bt_cmd_data_uart_out_data(const char *data, int data_len);
 int bt_cmd_data_uart_cmd_parse_register(bt_at_cmd_parse_fun_t *cmd, int cmd_num, pfun_bt_cmd_data_uart_data_process_t fun);
 
 #if defined __cplusplus

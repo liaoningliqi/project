@@ -9,6 +9,7 @@
 #include "platform_api.h"
 #include "peripheral_gpio.h"
 
+#include "app.h"
 #include "..\..\project_common\project_common.h"
 
 #if defined __cplusplus
@@ -27,6 +28,33 @@
 #define USER_UART1_IO_RX GIO_GPIO_8
 #define USER_UART1_IO_RTS GIO_GPIO_2
 #define USER_UART1_IO_CTS GIO_GPIO_16
+
+void kb_report_trigger_send(uint8_t key)
+{
+    btstack_push_user_msg(key, NULL, 0);// 发送给controller 按键trigger触发
+}
+
+uint8_t kb_notify_enable;
+void kb_state_changed(uint8_t key)
+{
+	if(key==1)
+	{
+        kb_report_trigger_send(USER_MSG_ID_REQUEST_SEND_KB1);
+	}
+	else
+	{
+        kb_report_trigger_send(USER_MSG_ID_REQUEST_SEND_KB2);
+	}
+}
+
+void delay(int cycles)
+{
+    int i;
+    for (i = 0; i < cycles; i++)
+    {
+        __nop();
+    }
+}
 
 void tlc59731_write(uint32_t value)
 {
@@ -130,10 +158,9 @@ static void peripherals_config_uart_user()
 
 void peripherals_setup(void)
 {
-    SYSCTRL_ClearClkGateMulti((1 << SYSCTRL_ClkGate_APB_GPIO) | (1 << SYSCTRL_ClkGate_APB_PinCtrl) | (1<<SYSCTRL_ClkGate_APB_PWM));
-
     peripherals_config_uart_user();
 
+    SYSCTRL_ClearClkGateMulti((1 << SYSCTRL_ClkGate_APB_GPIO) | (1 << SYSCTRL_ClkGate_APB_PinCtrl) | (1<<SYSCTRL_ClkGate_APB_PWM));
     PINCTRL_DisableAllInputs();
     PINCTRL_SetPadMux(KB_KEY_1, IO_SOURCE_GENERAL);
     PINCTRL_SetPadMux(KB_KEY_2, IO_SOURCE_GENERAL);
@@ -153,8 +180,9 @@ void peripherals_setup(void)
 void chip_peripherals_init(void)
 {
     platform_set_rf_clk_source(0);  	//use external crystal
-    platform_set_irq_callback(PLATFORM_CB_IRQ_GPIO, peripherals_gpio_isr, NULL);//key isr
     peripherals_setup();
+
+    platform_set_irq_callback(PLATFORM_CB_IRQ_GPIO, peripherals_gpio_isr, NULL);//key isr
 
     return;
 }

@@ -130,6 +130,26 @@ uint8_t initial_fac_conf()
     return 0;
 }
 
+int db_mesh_write_to_flash(const void *db, const int size)
+{
+    program_flash(MESH_FLASH_ADDRESS, db, size);
+    return KV_OK;
+}
+
+int read_mesh_from_flash(void *db, const int max_size)
+{
+    memcpy((uint8_t*)db,(uint8_t*)(MESH_FLASH_ADDRESS), max_size);
+    return 0;
+}
+
+void fast_switch_monitor_init(void)
+{
+    kv_init(db_mesh_write_to_flash,read_mesh_from_flash);  // attention !! : must set the init func here prior to func fast_switch_monitor.
+    fast_switch_monitor();
+
+    return;
+}
+
 #ifdef __cplusplus
 }
 #endif

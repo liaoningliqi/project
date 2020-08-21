@@ -10,6 +10,13 @@
     extern "C" {
 #endif
 
+#define PWM_R GIO_GPIO_10
+#define PWM_G GIO_GPIO_7
+#define PWM_B GIO_GPIO_6
+
+#define PWM_WARM GIO_GPIO_0
+#define PWM_COLD GIO_GPIO_9
+
 void chip_peripherals_init(void);
 
 #if defined __cplusplus

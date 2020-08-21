@@ -2,17 +2,8 @@
  * Copyright (c) 2018 INGCHIPS MESH
  */
 
-
-/*
- *  btstack_util.h
- *
- *
- *
- *
- */
 #include <stdio.h>
 #include "light_model.h"
-#include "RGB_drv.h"
 #include "state_binding.h"
 #include "device_composition.h"
 #include "transition.h"
@@ -20,6 +11,9 @@
 #include "mesh_api.h"
 #include "kv_storage.h"
 #include "profile.h"
+
+#include "chip_peripherals.h"
+
 #ifndef TRUE
 #define TRUE 1
 #define FALSE (!TRUE)

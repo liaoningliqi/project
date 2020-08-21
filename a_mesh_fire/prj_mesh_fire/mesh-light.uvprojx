@@ -395,19 +395,9 @@
               <FilePath>..\app\light_model.c</FilePath>
             </File>
             <File>
-              <FileName>RGB_drv.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\app\RGB_drv.c</FilePath>
-            </File>
-            <File>
               <FileName>mesh_flash_oper.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\mesh_flash_oper.c</FilePath>
-            </File>
-            <File>
-              <FileName>uart_console.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\app\uart_console.c</FilePath>
             </File>
             <File>
               <FileName>chip_peripherals.c</FileName>

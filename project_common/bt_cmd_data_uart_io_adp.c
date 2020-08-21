@@ -100,13 +100,20 @@ int bt_cmd_data_uart_out_string_with_end_char(const char *data)
     return BT_PRIVT_OK;
 }
 
-int bt_cmd_data_uart_out_data(const unsigned char *data, int data_len)
+void bt_cmd_data_uart_out_data(const char *data, int data_len)
 {
-    if (data == BT_PRIVT_NULL || data_len >= CMD_IO_PORT_BUF_LEN) {
-        return BT_PRIVT_ERROR;
+    int data_index;
+
+    if (data == BT_PRIVT_NULL) {
+        return;
     }
 
-    return BT_PRIVT_OK;
+    for (data_index = 0; data_index < data_len; data_index++) {
+        while (apUART_Check_TXFIFO_FULL(USR_UART_IO_PORT) == 1);
+        UART_SendData(USR_UART_IO_PORT, data[data_index]);
+    }
+
+    return;
 }
 
 static void bt_cmd_data_uart_in_data_handle_task(void *pdata)

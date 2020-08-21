@@ -1,3 +1,8 @@
+
+/*
+** COPYRIGHT (c) 2020 by INGCHIPS
+*/
+
 #include <stdio.h>
 #include "mesh_def.h"
 #include "mesh_api.h"
@@ -16,9 +21,16 @@
 #include "profile.h"
 #include "eflash.h"
 
+#include "app.h"
+#include "..\..\project_common\project_common.h"
 
+#if defined __cplusplus
+    extern "C" {
+#endif
 
-#define OTA_ADV_HANDLE                             (0x05)   //Attention: must not use the handle >5
+static uint8_t mesh_bt_dev_name[8] = {'I','n','g','c','h','i','p','\0'};
+
+#define OTA_ADV_HANDLE (0x05) // Attention: must not use the handle > 5
 /*
  * Server Configuration Declaration
  */
@@ -26,7 +38,6 @@
 volatile static u16_t primary_addr;
 volatile static u16_t primary_net_idx;
 extern void set_led_color(uint8_t r, uint8_t g, uint8_t b);
-
 
 #define INVALID_HANDLE (0xffff)
 #define AT_CMD_ID      (0xfffe)
@@ -86,10 +97,10 @@ static void prov_reset(void)
 
 #ifdef PTS_TEST
 static u8_t dev_uuid[16] = {0x02,0x0B,0xDC,0x08,0x10,0x21,0x0B,0x0E,0x0A,0x0C,0x00,0x0B,0x0E,0x0A,0x0B,0x96};
-const unsigned char addr[6] = {2,0,0,0,0,0};
+const static unsigned char addr[6] = {2,0,0,0,0,0};
 #else
 static u8_t dev_uuid[16] = MYNEWT_VAL(BLE_MESH_DEV_UUID);
-const unsigned char addr[6] = {1,0,0,0,0,0};
+const static unsigned char addr[6] = {1,0,0,0,0,0};
 #endif
 
 static const struct bt_mesh_prov prov = {
@@ -149,26 +160,6 @@ const uint8_t adv_data[] = {
 };
 
 //#ifndef DEV_BOARD
-
-#define USER_MSG_ID_REQUEST_SEND_KB1               2
-#define USER_MSG_ID_REQUEST_SEND_KB2               3
-void kb_report_trigger_send(uint8_t key)
-{
-    btstack_push_user_msg(key, NULL, 0);// 发送给controller 按键trigger触发
-}
-
-uint8_t kb_notify_enable;
-void kb_state_changed(uint8_t key)
-{
-	if(key==1)
-	{
-        kb_report_trigger_send(USER_MSG_ID_REQUEST_SEND_KB1);
-	}
-	else
-	{
-        kb_report_trigger_send(USER_MSG_ID_REQUEST_SEND_KB2);
-	}
-}
 //#endif
 
 uint8_t addr2[8]={0x01,0x01,0x01,0x04,0x05,0x06};
@@ -356,24 +347,17 @@ void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *p
 }
 
 #ifdef V2
-
-ota_ver_t this_version =
-    {
-        .app   = { .major = 1, .minor = 2, .patch = 0 }
-    };
-
-unsigned char pub_addr[] = {6,5,4,2,2,2,};
-
-#else
-
-ota_ver_t this_version =
-{
-		.app   = { .major = 1, .minor = 1, .patch = 0 }
+ota_ver_t this_version = {
+    .app = {.major = 1, .minor = 2, .patch = 0}
 };
-
+unsigned char pub_addr[] = {6,5,4,2,2,2,};
+#else
+ota_ver_t this_version = {
+    .app = {.major = 1, .minor = 1, .patch = 0}
+};
 unsigned char pub_addr[] = {6,5,4,1,1,1,};
-
 #endif
+
 kb_report_t report =
 {
     .modifier = 0,
@@ -385,21 +369,43 @@ kb_report_t report =
 
  uint8_t *init_service()
 {
-//	static char dev_name[] = "OTA_SRV";
-//	static uint8_t service_changed[] = {0x00,0x00,0x00,0x00};
-    sysSetPublicDeviceAddr(addr);
     att_db_util_init(att_db_storage, sizeof(att_db_storage));
     ota_init_service(&this_version);
-    return att_db_storage;//att_db_util_get_address();
+
+    return att_db_storage;
 }
 
 void update_led_command(remote_control_adv_t remote_control_adv_t, uint8_t length)
 {
-
+    return;
 }
 
 int flash_erase_and_write(uint8_t *flash_area, uint32_t off, uint32_t *src,uint32_t len)
 {
     return program_flash((uint32_t)flash_area,(uint8_t*)src,len);
 }
+
+uint32_t setup_profile(void *data, void *user_data)
+{
+    dbg_printf("setup profile\r\n");
+
+    sysSetPublicDeviceAddr(addr);
+
+    mesh_env_init();
+
+    init_service();
+    att_server_init(att_read_callback, att_write_callback);
+    hci_event_callback_registration.callback = &user_packet_handler;
+    hci_add_event_handler(&hci_event_callback_registration);
+    att_server_register_packet_handler(&user_packet_handler);
+
+    mesh_set_dev_name((char*)mesh_bt_dev_name);
+    create_mesh_task();
+
+    return 0;
+}
+
+#if defined __cplusplus
+    }
+#endif
 

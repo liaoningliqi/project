@@ -12,7 +12,7 @@
     extern "C" {
 #endif
 
-int8_t fast_switch_monitor(void);
+int8_t fast_switch_monitor_init(void);
 
 #if defined __cplusplus
     }

@@ -29,7 +29,7 @@ struct cached_data_t
 };
 
 
-/** 
+/**
  * @brief callback for the gen_onoff models status check.
  *
  * @param[in] model :  struct bt_mesh_model typed model
@@ -40,7 +40,7 @@ struct cached_data_t
  */
 int light_model_gen_onoff_get(struct bt_mesh_model *model, u8_t *state);
 
-/** 
+/**
  * @brief callback to set the current light on/off status
  *
  * @param[in] model :  struct bt_mesh_model typed model
@@ -51,7 +51,7 @@ int light_model_gen_onoff_get(struct bt_mesh_model *model, u8_t *state);
  */
 int light_model_gen_onoff_set(struct bt_mesh_model *model, u8_t state);
 
-/** 
+/**
  * @brief callback to set get the lightness level
  *
  * @param[in] model :  struct bt_mesh_model typed model
@@ -62,7 +62,7 @@ int light_model_gen_onoff_set(struct bt_mesh_model *model, u8_t state);
  */
 int light_model_gen_level_get(struct bt_mesh_model *model, s16_t *level);
 
-/** 
+/**
  * @brief callback to set get the lightness level
  *
  * @param[in] model :  struct bt_mesh_model typed model
@@ -90,7 +90,7 @@ int light_model_ctl_set(struct bt_mesh_model *model,uint16_t lightness , uint16_
 int unbind_light_mode_run(uint32_t duration);
 
 /**
- * @brief use this API could do some operations related to light model status, once the device has been provisioned 
+ * @brief use this API could do some operations related to light model status, once the device has been provisioned
  *
  * @return 0 : EOK
  */
@@ -138,4 +138,5 @@ int light_reset(uint16_t light, uint8_t cw);
  * @note  customer could get the last light on/off status ,lightness etc parameters from flash , and configure them to the light ,after power on.
  */
 int light_power_on(void);
+
 #endif

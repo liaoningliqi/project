@@ -3,8 +3,8 @@
 ** COPYRIGHT (c) 2020 by INGCHIPS
 */
 
-#ifndef __BLE_MESH_H__
-#define __BLE_MESH_H__
+#ifndef __MESH_FLASH_OPER_H__
+#define __MESH_FLASH_OPER_H__
 
 #include <stdint.h>
 
@@ -12,12 +12,12 @@
     extern "C" {
 #endif
 
-void mesh_set_dev_name(const char *name);
+#define USER_MSG_ID_REQUEST_SEND_KB1 2
+#define USER_MSG_ID_REQUEST_SEND_KB2 3
 
 #if defined __cplusplus
     }
 #endif
 
 #endif
-
 
