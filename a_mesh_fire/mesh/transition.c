@@ -32,6 +32,9 @@
 #include "transition.h"
 #include "mesh_api.h"
 #include "light_model.h"
+
+#include "..\..\project_common\project_common.h"
+
 #define ble_npl_eventq_dflt_get nimble_port_get_dflt_eventq
 #define ble_npl_callout_reset  npl_freertos_callout_reset
 #define ble_npl_callout_init   npl_freertos_callout_init
@@ -148,7 +151,7 @@ static void tt_values_calculator(struct transition *transition)
 	}
 
 	transition->counter = ((float) transition->total_duration / 100);
-    printf("tt counter %d\n",transition->counter);
+    dbg_printf("tt counter %d\n",transition->counter);
 	if (transition->counter > DEVICE_SPECIFIC_RESOLUTION) {
 		transition->counter = DEVICE_SPECIFIC_RESOLUTION;
 	}
@@ -162,7 +165,7 @@ void onoff_tt_values(struct generic_onoff_state *state, u8_t tt, u8_t delay)
 	calculate_lightness_target_values(ONOFF);
 	state->transition->tt = tt;
 	state->transition->delay = delay;
-    printf("tt  2 0x%p 0x%p value 0x%x 0x%x \n",state,state->transition,tt,state->transition->quo_tt);
+    dbg_printf("tt  2 0x%p 0x%p value 0x%x 0x%x \n",state,state->transition,tt,state->transition->quo_tt);
 	if (tt != 0) {
 		tt_values_calculator(state->transition);
 	} else {
@@ -188,7 +191,7 @@ void level_tt_values(struct generic_level_state *state, u8_t tt, u8_t delay)
 	}
 	state->transition->tt = tt;
 	state->transition->delay = delay;
-    printf("setup TT 0x%x\n",tt);
+    dbg_printf("setup TT 0x%x\n",tt);
 	if (tt != 0) {
 		tt_values_calculator(state->transition);
 	} else {
@@ -201,7 +204,7 @@ void level_tt_values(struct generic_level_state *state, u8_t tt, u8_t delay)
 
 	state->tt_delta = ((float) (state->level - state->target_level) /
 			   state->transition->counter);
-    printf("quo_tt 0x%x delta 0x%x \n",state->transition->quo_tt,state->tt_delta);
+    dbg_printf("quo_tt 0x%x delta 0x%x \n",state->transition->quo_tt,state->tt_delta);
 }
 
 void light_lightness_actual_tt_values(struct light_lightness_state *state,
@@ -310,8 +313,8 @@ void light_ctl_temp_tt_values(struct light_ctl_state *state,
 static void onoff_work_handler(struct ble_npl_event *work)
 {
 	struct generic_onoff_state *state = &gen_onoff_srv_root_user_data;
-//    printf("just started 0x%x\n",state->transition->just_started);
-    printf("counter 0x%d timer 0x%p\n",state->transition->counter,ptr_timer);
+//    dbg_printf("just started 0x%x\n",state->transition->just_started);
+    dbg_printf("counter 0x%d timer 0x%p\n",state->transition->counter,ptr_timer);
 	if (state->transition->just_started) {
 		state->transition->just_started = false;
 
@@ -369,7 +372,7 @@ static void level_lightness_work_handler(struct ble_npl_event *work)
 	default:
 		return;
 	}
-    printf("level_lightness_work_handler started 0x%x counter 0x%x\n",state->transition->just_started,state->transition->counter);
+    dbg_printf("level_lightness_work_handler started 0x%x counter 0x%x\n",state->transition->just_started,state->transition->counter);
 	if (state->transition->just_started) {
 		state->transition->just_started = false;
 
@@ -630,11 +633,11 @@ static void onoff_tt_handler(struct ble_npl_event *ev)
     //avoid to repeatly call the transition timer once counter is 0
 //    if((state->transition->counter == 0) && (state->target_onoff == state->onoff))
 //    {
-//        printf("tt stopped\n");
+//        dbg_printf("tt stopped\n");
 //        return;
 //    }
 	ble_npl_callout_reset(&onoff_work, 0);
-    printf("quo_tt 0x%p 0x%p 0x%x\n",state,state->transition,(state->transition->quo_tt));
+    dbg_printf("quo_tt 0x%p 0x%p 0x%x\n",state,state->transition,(state->transition->quo_tt));
     if(K_MSEC(state->transition->quo_tt)>0)
     {
         ble_npl_callout_reset(&state->transition->timer,
@@ -646,7 +649,7 @@ static void onoff_tt_handler(struct ble_npl_event *ev)
 static void level_lightness_tt_handler(struct ble_npl_event *ev)
 {
 	struct generic_level_state *state = ble_npl_event_get_arg(ev);
-    printf("transition timer quo_tt 0x%x\n",K_MSEC(state->transition->quo_tt));
+    dbg_printf("transition timer quo_tt 0x%x\n",K_MSEC(state->transition->quo_tt));
 	assert(state != NULL);
     if(state->level == state->target_level) //avoid to start the timer repeately once the target lightness has reached.
         return;
@@ -765,7 +768,7 @@ void level_lightness_handler(struct generic_level_state *state)
 	ble_npl_callout_reset(ptr_timer,
 			      ble_npl_time_ms_to_ticks32(
 				      K_MSEC(5 * state->transition->delay)));
-    printf("lightness_handle %d\n",K_MSEC(5 * state->transition->delay));
+    dbg_printf("lightness_handle %d\n",K_MSEC(5 * state->transition->delay));
 }
 
 void level_temp_handler(struct generic_level_state *state)
@@ -792,7 +795,7 @@ void light_lightness_actual_handler(struct light_lightness_state *state)
     else
         reconf_timer_callback_entry(ptr_timer, ble_npl_eventq_dflt_get(),
 			     light_lightness_actual_tt_handler, NULL);
-    printf("lightness--22 0x%x fun 0x%x\n",ptr_timer->handle,ptr_timer->ev.fn);
+    dbg_printf("lightness--22 0x%x fun 0x%x\n",ptr_timer->handle,ptr_timer->ev.fn);
 	ble_npl_callout_set_arg(ptr_timer,
 				state);
 	ble_npl_callout_reset(ptr_timer,

@@ -12,6 +12,7 @@
 #include "peripheral_gpio.h"
 
 #include "app.h"
+#include "chip_peripherals.h"
 #include "..\..\project_common\project_common.h"
 
 #if defined __cplusplus
@@ -21,8 +22,6 @@
 #define KB_KEY_1 GIO_GPIO_1
 #define KB_KEY_2 GIO_GPIO_5
 #define KB_KEY_3 GIO_GPIO_7
-
-#define PIN_SDI GIO_GPIO_0
 
 #define USER_UART0_IO_TX GIO_GPIO_2
 #define USER_UART0_IO_RX GIO_GPIO_3

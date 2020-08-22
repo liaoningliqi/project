@@ -125,11 +125,11 @@ int8_t fast_switch_monitor()
         //get the current value;
         counter = *((uint8_t*)db);
         counter++;
-        printf("counter 0x%x\n",counter-1);
+        dbg_printf("counter 0x%x\n",counter-1);
     }
     if(counter>=reset_count)
     {
-           printf("reset start\n");
+           dbg_printf("reset start\n");
            counter = 0;
            initial_fac_conf();
            return 1;

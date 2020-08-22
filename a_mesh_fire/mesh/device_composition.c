@@ -35,6 +35,9 @@
 #include "transition.h"
 #include "profile.h"
 #include "os_mbuf.h"
+
+#include "..\..\project_common\project_common.h"
+
 #define NO_TRANSTION_STATUS    (1)   //dengyiyunb 1: not report the transition information in status ,and set the target value in status msg.  0: report the transition in status msg.
 
 /* Model Operation Codes */
@@ -300,7 +303,7 @@ static void gen_onoff_set_unack(struct bt_mesh_model *model, struct bt_mesh_msg_
 
     if (state->target_onoff != state->onoff) {
         onoff_tt_values(state, tt, delay);
-        printf("tt 3 0x%p \n",state->transition);
+        dbg_printf("tt 3 0x%p \n",state->transition);
     } else {
         gen_onoff_publish(model);
         return;
@@ -323,7 +326,7 @@ static void gen_onoff_set(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *c
     struct generic_onoff_state *state = model->user_data;
     onoff = net_buf_simple_pull_u8(buf);
     tid = net_buf_simple_pull_u8(buf);
-    printf("onoff 0x%x\n",onoff);
+    dbg_printf("onoff 0x%x\n",onoff);
     if (onoff > STATE_ON) {
         return;
     }
@@ -333,7 +336,7 @@ static void gen_onoff_set(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *c
         state->last_src_addr == ctx->addr &&
         state->last_dst_addr == ctx->recv_dst &&
         (now - state->last_msg_timestamp <= K_SECONDS(6))) {
-        printf("less < 6s\n");
+        dbg_printf("less < 6s\n");
         gen_onoff_get(model, ctx, buf);
         return;
     }
@@ -363,7 +366,7 @@ static void gen_onoff_set(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *c
     state->last_dst_addr = ctx->recv_dst;
     state->last_msg_timestamp = now;
     state->target_onoff = onoff;
-    printf("tt value 0x%x 0x%x state 0x%x target stat 0x%x\n",tt,state->transition,state->onoff,state->target_onoff);
+    dbg_printf("tt value 0x%x 0x%x state 0x%x target stat 0x%x\n",tt,state->transition,state->onoff,state->target_onoff);
     if (state->target_onoff != state->onoff) {
         onoff_tt_values(state, tt, delay);
     } else {
@@ -380,7 +383,7 @@ static void gen_onoff_set(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *c
     state->transition->just_started = true;
     gen_onoff_get(model, ctx, buf);
     gen_onoff_publish(model);
-    printf("stat 0x%x \n",state);
+    dbg_printf("stat 0x%x \n",state);
     onoff_handler(state);
 }
 
@@ -1217,7 +1220,7 @@ static void vnd_set(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *ctx, st
         beacon_disabled = 1;
     }
     u8_t *p = buf->om_data;
-    printf("VND set 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
+    dbg_printf("VND set 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
                     p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7]);
     update_led_command(*(remote_control_adv_t *)buf->om_data, 8);
 }
@@ -2023,7 +2026,7 @@ static void light_ctl_set(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *c
         state->temp = state->target_temp;
         state->delta_uv = state->target_delta_uv;
     }
-    printf("target_temp444  0x%x\n",target_temperature);
+    dbg_printf("target_temp444  0x%x\n",target_temperature);
     state->transition->just_started = true;
     light_ctl_get(model, ctx, buf);
     light_ctl_publish(model);
@@ -2487,10 +2490,10 @@ static void light_lightness_status_t(struct bt_mesh_model *model, struct bt_mesh
         cb->get(model, p_lightness,lightness,remain);
     }
 
-    printf("lightness: expect %d curr %d remain %d", *p_lightness,*lightness,*remain);
+    dbg_printf("lightness: expect %d curr %d remain %d", *p_lightness,*lightness,*remain);
 
     if (bt_mesh_model_send(model, ctx, msg, NULL, NULL)) {
-        printf("Send status failed");
+        dbg_printf("Send status failed");
     }
 
     os_mbuf_free_chain(msg);
@@ -2519,10 +2522,10 @@ static void light_HSL_status(struct bt_mesh_model *model, struct bt_mesh_msg_ctx
         cb->get(model,hue,sa,lightness,remain);
     }
 
-    printf("hue: %d sa: %d lightness: %d", *hue,*sa,*lightness);
+    dbg_printf("hue: %d sa: %d lightness: %d", *hue,*sa,*lightness);
 
     if (bt_mesh_model_send(model, ctx, msg, NULL, NULL)) {
-        printf("Send status failed");
+        dbg_printf("Send status failed");
     }
 
     os_mbuf_free_chain(msg);
@@ -2541,7 +2544,7 @@ static void light_hsl_set_unack(struct bt_mesh_model *model, struct bt_mesh_msg_
     val.lightness = lightness;
     val.hue =hue;
     val.sa = sa;
-    printf("hsl: %d %d %d", lightness,hue,sa);
+    dbg_printf("hsl: %d %d %d", lightness,hue,sa);
 
     if (cb && cb->set) {
         cb->set(model, &val);
@@ -2829,21 +2832,5 @@ struct bt_mesh_model * get_model_by_id(uint16_t id)
     }
     return NULL;
 }
-
-bool get_group_addr_by_id(uint16_t id,uint16_t* group)
-{
-    struct bt_mesh_model *pmod = get_model_by_id(id);
-    if(pmod == NULL)
-        return false;
-    uint8_t i = CONFIG_BT_MESH_MODEL_GROUP_COUNT;
-    for (i = 0; i < CONFIG_BT_MESH_MODEL_GROUP_COUNT; i++)
-    {
-        pmod->groups[i] != BT_MESH_ADDR_UNASSIGNED;
-        *group = pmod->groups[i];
-        return true;
-    }
-    return false;
-}
-
 
 

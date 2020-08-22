@@ -31,6 +31,8 @@
 #include "transition.h"
 #include <stdio.h>
 
+#include "..\..\project_common\project_common.h"
+
 u16_t lightness, target_lightness,last_lightness;
 s16_t temperature, target_temperature;
 
@@ -97,7 +99,7 @@ static void constrain_target_lightness(u16_t var)
 	}
 
 	target_lightness = var;
-    printf("targetness 0x%x\n",target_lightness);
+    dbg_printf("targetness 0x%x\n",target_lightness);
 }
 
 static s16_t light_ctl_temp_to_level(u16_t temp)
@@ -141,13 +143,13 @@ void state_binding(u8_t light, u8_t temp)
 		temperature =
 			light_ctl_temp_to_level(light_ctl_srv_user_data.temp);
 		gen_level_srv_s0_user_data.level = temperature;
-        printf("temp 0x%x\n",temperature);
+        dbg_printf("temp 0x%x\n",temperature);
 		break;
 	case LEVEL_TEMP:
 		temperature = gen_level_srv_s0_user_data.level;
 		light_ctl_srv_user_data.temp =
 			level_to_light_ctl_temp(temperature);
-        printf("temp22 0x%x\n",temperature);
+        dbg_printf("temp22 0x%x\n",temperature);
 		break;
 	default:
 		break;
@@ -166,10 +168,10 @@ void state_binding(u8_t light, u8_t temp)
 			lightness = 0U;
 		} else if (gen_onoff_srv_root_user_data.onoff == STATE_ON) {
 //			if (light_lightness_srv_user_data.def == 0) {
-//                printf("onoff--1 0x%x\n",light_lightness_srv_user_data.last);
+//                dbg_printf("onoff--1 0x%x\n",light_lightness_srv_user_data.last);
 //				lightness = light_lightness_srv_user_data.last;
 //			} else {
-//                printf("onoff--2 0x%x\n",light_lightness_srv_user_data.def);
+//                dbg_printf("onoff--2 0x%x\n",light_lightness_srv_user_data.def);
 //				lightness = light_lightness_srv_user_data.def;
 //			}
             lightness = last_lightness;
@@ -228,10 +230,10 @@ void calculate_lightness_target_values(u8_t type)
 			tmp = 0U;
 		} else {
 //			if (light_lightness_srv_user_data.def == 0) {
-////                printf("def ==0,0x%x",light_lightness_srv_user_data.last);
+////                dbg_printf("def ==0,0x%x",light_lightness_srv_user_data.last);
 ////				tmp = light_lightness_srv_user_data.last;
 ////			} else {
-////                printf("def 0x%x\n",light_lightness_srv_user_data.def);
+////                dbg_printf("def 0x%x\n",light_lightness_srv_user_data.def);
 ////				tmp = light_lightness_srv_user_data.def;
                 tmp = last_lightness;
 //			}
@@ -255,14 +257,14 @@ void calculate_lightness_target_values(u8_t type)
 		tmp = light_ctl_srv_user_data.target_lightness;
 
 		target_temperature = light_ctl_temp_to_level(light_ctl_srv_user_data.target_temp);
-        printf("temp222 target_temp 0x%x target_tempereture 0x%x\n",light_ctl_srv_user_data.target_temp,target_temperature);
+        dbg_printf("temp222 target_temp 0x%x target_tempereture 0x%x\n",light_ctl_srv_user_data.target_temp,target_temperature);
 		gen_level_srv_s0_user_data.target_level = target_temperature;
         last_lightness = tmp;
 		break;
 	default:
 		return;
 	}
-    printf("last lightness 0x%x \n",last_lightness);
+    dbg_printf("last lightness 0x%x \n",last_lightness);
 	constrain_target_lightness(tmp);
 
 	if (target_lightness) {
@@ -281,7 +283,7 @@ void calculate_lightness_target_values(u8_t type)
 	light_ctl_srv_user_data.target_lightness = target_lightness;
 
 	if (set_light_ctl_temp_target_value) {
-        printf("temp7788 0x%x 2 0x%x\n ",light_ctl_srv_user_data.temp,target_temperature);
+        dbg_printf("temp7788 0x%x 2 0x%x\n ",light_ctl_srv_user_data.temp,target_temperature);
 		target_temperature = light_ctl_srv_user_data.temp;
 		light_ctl_srv_user_data.target_temp = target_temperature;
 	}
@@ -303,7 +305,7 @@ void calculate_temp_target_values(u8_t type)
 		set_light_ctl_delta_uv_target_value = false;
 
 		target_temperature = light_ctl_temp_to_level(light_ctl_srv_user_data.target_temp);
-        printf("temp 0x%x target_temp 0x%x\n",light_ctl_srv_user_data.target_temp,target_temperature);
+        dbg_printf("temp 0x%x target_temp 0x%x\n",light_ctl_srv_user_data.target_temp,target_temperature);
 		gen_level_srv_s0_user_data.target_level = target_temperature;
 		break;
 	default:

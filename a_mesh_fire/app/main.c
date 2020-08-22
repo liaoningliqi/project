@@ -25,7 +25,7 @@
 
 __weak void __aeabi_assert(const char *a ,const char* b, int c)
 {
-    printf("assert\n");
+    dbg_printf("assert\n");
     for (;;);
 }
 

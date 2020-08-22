@@ -45,6 +45,8 @@
 
 #define BT_PRIVT_NULL 0
 
+#define INVALID_HANDLE (0xffff)
+
 typedef int (*pfunbt_at_cmd_parse)(const char *str_in, int str_in_len, char *str_out, int str_out_len);
 typedef int (*pfun_bt_cmd_data_uart_data_process_t)(const char *str_in, int str_in_len);
 

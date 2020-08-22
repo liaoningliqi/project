@@ -1,7 +1,7 @@
 
 /*
- * Copyright (c) 2018 INGCHIPS MESH
- */
+** COPYRIGHT (c) 2020 by INGCHIPS
+*/
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -20,8 +20,18 @@
 #include "ATcmd_process.h"
 #include "mesh_api.h"
 
+
+#include "btstack_util.h"
 #include "BLE_mesh.h"
 #include "project_common.h"
+#include "light_model.h"
+#include "chip_peripherals.h"
+
+#if defined __cplusplus
+    extern "C" {
+#endif
+
+#define PANIC(fmt, args...) do { dbg_printf("PANIC: " fmt, ##args); for (;;);} while (false);
 
 #define K_NO_WAIT (0)
 #define K_FOREVER (-1)
@@ -29,67 +39,83 @@
 #define TASK_HOST (0x06)
 #define TASK_MESH (0x04)
 
-#define INVALID_HANDLE (0xffff)
-
-
-
-
 #define LIGHT_SEC_ALI
 
 #ifdef LIGHT_SEC_ALI
-#define SEC	 ((uint8_t[16]){0x64,0xc9,0x41,0x14,0xca,0x07,0x24,0x40,0xa3,0xc1,0xbb,0x2b,0x22,0xb5,0x24,0x5e})
-#define PB_ADV_ADDR   ((uint8_t[6]){0x28,0xfa,0x7a,0xa3,0xcd,0xfc})
+#define SEC ((uint8_t[16]){0x64,0xc9,0x41,0x14,0xca,0x07,0x24,0x40,0xa3,0xc1,0xbb,0x2b,0x22,0xb5,0x24,0x5e})
+#define PB_ADV_ADDR ((uint8_t[6]){0x28,0xfa,0x7a,0xa3,0xcd,0xfc})
 #endif
 
 #ifdef LIGHT_SEC4
-#define SEC	 ((uint8_t[16]){0x39,0xd6,0x96,0xff,0x64,0xfd,0xbf,0xe2,0xbb,0xfe,0x27,0xc0,0x5a,0xb3,0x26,0x5f})
-#define PB_ADV_ADDR   ((uint8_t[6]){0x38,0xd2,0xca,0x16,0xe0,0x2f})
+#define SEC ((uint8_t[16]){0x39,0xd6,0x96,0xff,0x64,0xfd,0xbf,0xe2,0xbb,0xfe,0x27,0xc0,0x5a,0xb3,0x26,0x5f})
+#define PB_ADV_ADDR ((uint8_t[6]){0x38,0xd2,0xca,0x16,0xe0,0x2f})
 #endif
 
 #ifdef LIGHT_SEC3
-#define SEC	 ((uint8_t[16]){0x59,0x06,0x2b,0x94,0x04,0xdf,0x29,0xfc,0xfd,0x2f,0x75,0x11,0x77,0xff,0x68,0x1a})
-#define PB_ADV_ADDR   ((uint8_t[6]){0x38,0xd2,0xca,0x16,0xe0,0x02})
+#define SEC ((uint8_t[16]){0x59,0x06,0x2b,0x94,0x04,0xdf,0x29,0xfc,0xfd,0x2f,0x75,0x11,0x77,0xff,0x68,0x1a})
+#define PB_ADV_ADDR ((uint8_t[6]){0x38,0xd2,0xca,0x16,0xe0,0x02})
 #endif
 
 #ifdef LIGHT_SEC2
-#define SEC	 ((uint8_t[16]){0x12,0xfc,0x31,0x28,0x73,0x0f,0x5b,0x84,0xe9,0x6c,0x1a,0x2c,0xac,0x5f,0xb8,0x93})
-#define PB_ADV_ADDR   ((uint8_t[6]){0x38,0xd2,0xca,0x16,0xe0,0x01})
+#define SEC ((uint8_t[16]){0x12,0xfc,0x31,0x28,0x73,0x0f,0x5b,0x84,0xe9,0x6c,0x1a,0x2c,0xac,0x5f,0xb8,0x93})
+#define PB_ADV_ADDR ((uint8_t[6]){0x38,0xd2,0xca,0x16,0xe0,0x01})
 #endif
 
 #ifdef LIGHT_SEC1
-#define SEC	 ((uint8_t[16]){0xde,0x9d,0x7a,0xdb,0xa7,0xef,0x12,0x67,0x00,0xec,0xa6,0x56,0x68,0x93,0x89,0x4c})
-#define PB_ADV_ADDR   ((uint8_t[6]){0x38,0xd2,0xca,0x16,0xe0,0x00})
+#define SEC ((uint8_t[16]){0xde,0x9d,0x7a,0xdb,0xa7,0xef,0x12,0x67,0x00,0xec,0xa6,0x56,0x68,0x93,0x89,0x4c})
+#define PB_ADV_ADDR ((uint8_t[6]){0x38,0xd2,0xca,0x16,0xe0,0x00})
 #endif
 
-#define PB_GATT_MAC_ADDR                       ((uint8_t[6]){0x38,0xd2,0xca,0x16,0xe0,0x010})
+#define PB_GATT_MAC_ADDR ((uint8_t[6]){0x38,0xd2,0xca,0x16,0xe0,0x010})
 
-static uint32_t BLE_MESH_DEV_PRODUCT_ID = 5349350;
-static uint8_t param[32];
-
-
-
-
-extern uint32_t TM_AUTHEN_VAL_LEN;
-
-extern void user_msg_handler(btstack_user_msg_t * usrmsg);
-extern void nimble_port_init(void);
-extern void model_init(void);
-int mesh_main(int argc, char **argv);
-static mesh_gap_event mesh_event;
-static uint16_t conn_handle =INVALID_HANDLE;
-static uint16_t temp_conn_handle = INVALID_HANDLE;
-static uint16_t notify_write =0;
-extern uint32_t MYNEWT_VAL_BLE_MESH_GATT_PROXY ;
-extern uint32_t MYNEWT_VAL_BLE_MESH_PB_GATT;
-
-#define PANIC(fmt, args...) do { printf("PANIC: " fmt, ##args); for (;;);} while (false);
 #define MAX_PROV_PROX_DATA_OUT_LEN (66)
-uint8_t proxy_prov_out_data[MAX_PROV_PROX_DATA_OUT_LEN]={0};
+
 #define PROV_DATA_IN_HDL 0x0003
 #define PROV_DATA_OUT_HDL 0x0010
 #define PROXY_DATA_IN_HDL 0x0003
 #define PROXY_DATA_OUT_HDL 0x0005
 #define CLIENT_CHARAC_CONF  0x0006
+
+#define MYNEWT_VAL_BLE_MESH_DEV_UUID ((uint8_t[16]){0xA8,0x01,0x61,0x00,0x04,0x20,0x30,0x75,0x9a,0x00,0x07,0xda,0x78,0x00,0x00,0x00})
+
+#define DISCARDED  (1)
+
+extern void user_msg_handler(btstack_user_msg_t * usrmsg);
+
+#ifdef PTS_TEST
+static u8_t dev_uuid[16] = {0x02,0x0B,0xDC,0x08,0x10,0x21,0x0B,0x0E,0x0A,0x0C,0x00,0x0B,0x0E,0x0A,0x0B,0x96};
+const static unsigned char addr[6] = {2,0,0,0,0,0};
+#else
+static u8_t dev_uuid[16] = MYNEWT_VAL(BLE_MESH_DEV_UUID);
+const static unsigned char addr[6] = {1,0,0,0,0,0};
+#endif
+
+static void prov_complete(u16_t net_idx, u16_t addr);
+static void prov_reset(void);
+static const struct bt_mesh_prov prov = {
+    .uuid = dev_uuid,
+#if USE_OOB
+    .output_size = 6,
+    .output_actions = (BT_MESH_DISPLAY_NUMBER | BT_MESH_DISPLAY_STRING),
+    .output_number = output_number,
+    .output_string = output_string,
+#else
+    .output_size = 0,
+    .output_actions = 0,
+    .output_number = 0,
+    .output_string = 0,
+#endif
+    .complete = prov_complete,
+    .reset = prov_reset,
+};
+
+static uint32_t BLE_MESH_DEV_PRODUCT_ID = 5349350;
+static uint8_t param[32];
+
+static mesh_gap_event mesh_event;
+static uint16_t conn_handle =INVALID_HANDLE;
+static uint16_t temp_conn_handle = INVALID_HANDLE;
+static uint16_t notify_write =0;
 
 const uint8_t pb_gatt_service_data[]=
 {
@@ -125,13 +151,10 @@ const uint8_t proxy_service_data[] =
 };
 
 const uint8_t proxy_adv_data[]={
-
     // Flags general discoverable
     0x02,0x01,0x06,
-
     //16bits UUIDs -for provisionning srvice
     0x03, 0x03, 0x28, 0x18,
-
     //16bits  UUIDs -for mesh proxy    service
     //0x18,0x17,0x2b,0x01,0x00,0xe3,0xd4,0xc6,0x4c,0x1e,0x29,0x21,0x7d,0x00,0x00,0x00,0x00,0x5b,0xf4,0x6b,0xbd,0x0c,0x34,0xa2,0x0e,
     0x15,0x16,0x28,0x18,0xA8,0x01,0x61,0x00,0x04,0x00,0x00,0x75,0x9a,0x00,0x07,0xda,0x78,0x00,0x00,0x00,0x00,0x00,
@@ -139,13 +162,10 @@ const uint8_t proxy_adv_data[]={
 };
 
 const uint8_t pb_gatt_adv_data[]={
-
     // Flags general discoverable
     0x02,0x01,0x06,
-
     //16bits UUIDs -for provisionning srvice
     0x03, 0x03,0x27,0x18,
-
     //16bits  UUIDs -for mesh proxy    service
     0x15, 0x16,0x27,0x18,0xA8, 0x01, 0x61,0x00,0x04,0x00,0x00,0x75,0x9a,0x00,0x07,0xda,0x78,0x00,0x00,0x00,0x00,0x00,
 };
@@ -160,18 +180,52 @@ const uint8_t mesh_proxy_service_scan_rsp_data[]={
 };
 
 const uint8_t adv_mesh_rsp_data_len = sizeof(mesh_proxy_service_scan_rsp_data);
-/**
-* Retrieves the attribute handle associated with a local GATT service.
-*
-* @param uuid                  The UUID of the service to look up.
-* @param out_handle            On success, populated with the handle of the
-*                                  service attribute.  Pass null if you don't
-*                                  need this value.
-*
-* @return                      0 on success;
-*                              BLE_HS_ENOENT if the specified service could
-*                                  not be found.
-*/
+
+volatile static u16_t primary_addr;
+volatile static u16_t primary_net_idx;
+
+static btstack_packet_callback_registration_t hci_event_callback_registration;
+const event_vendor_ccm_complete_t *cmpl = NULL;
+uint8_t * ptr = NULL;
+uint8_t pre_adv[255]={0};
+uint8_t test[8]={0};
+
+static const struct bt_mesh_prov *p_prov = NULL;
+static const struct bt_mesh_comp *p_comp = NULL;
+
+mesh_at_out uart_printf = NULL;
+
+uint8_t mesh_at[100]={0};
+uint8_t size =0;
+bool recv_from_uart = false;
+
+static char buf[200];
+
+static void prov_complete(u16_t net_idx, u16_t addr)
+{
+    dbg_printf("provisioning complete for net_idx 0x%04x addr 0x%04x", net_idx, addr);
+    primary_addr = addr;
+    primary_net_idx = net_idx;
+    light_provsioned_complete();
+    set_mesh_sleep_duration(150);
+    set_flag_for_adv_sent(0);
+
+    GIO_SetDirection(PIN_SDI, GIO_DIR_OUTPUT);
+    GIO_WriteValue(PIN_SDI, 0);
+
+    if(!light_status_set) {
+        set_led_color(50, 50, 50);
+        light_status_set = false;
+    }
+}
+
+static void prov_reset(void)
+{
+    bt_mesh_prov_enable((bt_mesh_prov_bearer_t)(BT_MESH_PROV_ADV | BT_MESH_PROV_GATT));
+    dbg_printf("node reset\n");
+    set_flag_for_adv_sent(0);
+}
+
 int ble_gatts_find_svc(uint8_t *db, const ble_uuid_t *uuid, uint16_t *out_handle)
 {
     if(((ble_uuid16_t*)uuid)->value == 0x1828) {
@@ -187,20 +241,7 @@ int ble_gatts_find_svc(uint8_t *db, const ble_uuid_t *uuid, uint16_t *out_handle
     return -1;
 }
 
-/**
-* Retrieves the attribute handle associated with a local GATT service.
-*
-* @param uuid                  The UUID of the service to look up.
-* @param out_handle            On success, populated with the handle of the
-*                                  service attribute.  Pass null if you don't
-*                                  need this value.
-*
-* @return                      0 on success;
-*                              BLE_HS_ENOENT if the specified service could
-*                                  not be found.
-*/
-int
-ble_gatts_find_chr(uint8_t *db, uint16_t srv_handle, const ble_uuid_t *chr_uuid, uint16_t *out_att_chr)
+int ble_gatts_find_chr(uint8_t *db, uint16_t srv_handle, const ble_uuid_t *chr_uuid, uint16_t *out_att_chr)
 {
    if(((ble_uuid16_t*)chr_uuid)->value == 0x2ade) { // proxy_out_handle
         *out_att_chr = 0x0005;
@@ -225,23 +266,6 @@ ble_gatts_find_chr(uint8_t *db, uint16_t srv_handle, const ble_uuid_t *chr_uuid,
    return -1;
 }
 
-/**
-* @brief to dispose the read operation befor returning data
-*        in mesh service ,this function only used to dippose the character client configure attribute
-*
-* @param con_handle          handle of a connection
-*
-*
-* @param attribute_handle    from which database handle to read data
-*
-* @param offset              offset from the reading data
-*
-* @param buffer              to cache the read data
-*
-* @param buffer_size         how much data to be read
-*
-* @return    the size the data to be read
-*/
 uint16_t mesh_read_callback(hci_con_handle_t con_handle, uint16_t attribute_handle, uint16_t offset, uint8_t * buffer, uint16_t buffer_size)
 {
     if(!bt_mesh_is_provisioned()) {
@@ -257,23 +281,6 @@ uint16_t mesh_read_callback(hci_con_handle_t con_handle, uint16_t attribute_hand
     }
 }
 
-/**
-* @brief to dispose the write operation from peer
-*        in mesh service ,this function only used to dippose the character client configure attribute
-*
-* @param con_handle          handle of a connection
-*
-*
-* @param attribute_handle    from which database handle to write
-*
-* @param offset              offset from the reading data
-*
-* @param buffer              to cache the read data
-*
-* @param buffer_size         how much data to be read
-*
-* @return    the size the data to be read
-*/
 static uint16_t att_read_callback(hci_con_handle_t con_handle, uint16_t attribute_handle, uint16_t offset, uint8_t * buffer, uint16_t buffer_size)
 {
     if (attribute_handle == CLIENT_CHARAC_CONF ) {
@@ -296,7 +303,7 @@ uint16_t mesh_write_callback(hci_con_handle_t con_handle, uint16_t attribute_han
     }
     return 0;
 }
-extern int Host2Mesh_msg_send(uint8_t* mesh_msg ,uint8_t len);
+
 static int att_write_callback(hci_con_handle_t con_handle, uint16_t attribute_handle, uint16_t transaction_mode, uint16_t offset, const uint8_t *buffer, uint16_t buffer_size)
 {
     if(attribute_handle == PROV_DATA_IN_HDL || attribute_handle == PROXY_DATA_IN_HDL)
@@ -308,13 +315,13 @@ static int att_write_callback(hci_con_handle_t con_handle, uint16_t attribute_ha
         mesh_event.connect.attr_handle= attribute_handle;
         uint8_t * ptr = NULL;
         DTBT_msg_t *proxy_data = btstack_memory_dtbt_msg_get();
-        printf("size 0x%x\n",buffer_size);
+        dbg_printf("size 0x%x\n",buffer_size);
         if(proxy_data==NULL)
         {
-            printf("warning buffer full\n");
+            dbg_printf("warning buffer full\n");
             return -1;
         }
-        printf("buffer size 0x%x and mesh_event 0x%x\n",buffer_size,sizeof(mesh_event));
+        dbg_printf("buffer size 0x%x and mesh_event 0x%x\n",buffer_size,sizeof(mesh_event));
         ASSERT_ERR(HCI_ACL_PAYLOAD_SIZE+4 > (buffer_size+sizeof(mesh_event)));
         mesh_event.connect.data = proxy_data->data + sizeof(mesh_event);
         mesh_event.connect.length= buffer_size;
@@ -332,47 +339,31 @@ static int att_write_callback(hci_con_handle_t con_handle, uint16_t attribute_ha
     }
     return 0;
 }
-//static uint8_t adv_type = 0x00;
 
-static btstack_packet_callback_registration_t hci_event_callback_registration;
+static void user_packet_handler (uint8_t packet_type, uint16_t channel, const uint8_t *packet, uint16_t size)
+{
+    uint8_t event = hci_event_packet_get_type(packet);
+    if (packet_type != HCI_EVENT_PACKET) return;
 
-extern int PB_ADV_config(void);
-
-const event_vendor_ccm_complete_t *cmpl = NULL;
-uint8_t * ptr = NULL;
-//use to cache the last disposed mesh advertising packet.
-uint8_t pre_adv[255]={0};
-extern int mesh_flash_sys_init(void);
-extern bool is_provisioned_poweron(void);
-extern int conf_load_new(void);
-extern void sync_kv(void);
-extern int8_t get_aes_result(void);
-extern uint8_t * ptr_aestext;
-uint8_t test[8]={0};
-#define DISCARDED  (1)
-static void user_packet_handler (uint8_t packet_type, uint16_t channel, const uint8_t *packet, uint16_t size){
-     uint8_t event = hci_event_packet_get_type(packet);
-     if (packet_type != HCI_EVENT_PACKET) return;
-        switch (event)     {
-            case BTSTACK_EVENT_STATE:
-                if (btstack_event_state_get_state(packet) != HCI_STATE_WORKING)
-                    break;
-
-#if (FLASH_ENABLE)
-                mesh_flash_sys_init();
-#endif
-                mesh_event.type = STACK_INIT_DONE;
-                Host2Mesh_msg_send((uint8_t *)&mesh_event,sizeof(mesh_event));
+    switch (event) {
+        case BTSTACK_EVENT_STATE:
+            if (btstack_event_state_get_state(packet) != HCI_STATE_WORKING) {
                 break;
-            case HCI_EVENT_COMMAND_COMPLETE:
+            }
+#if (FLASH_ENABLE)
+            mesh_flash_sys_init();
+#endif
+            mesh_event.type = STACK_INIT_DONE;
+            Host2Mesh_msg_send((uint8_t *)&mesh_event,sizeof(mesh_event));
+            break;
+        case HCI_EVENT_COMMAND_COMPLETE:
                 switch (hci_event_command_complete_get_command_opcode(packet))
                 {
                     case HCI_VENDOR_CCM:
                     {
-                        extern struct k_sem  ccm_sem;
                         cmpl = decode_hci_event_vendor_ccm_complete(packet);
-                        printf("tag     = 0x%08x\n", cmpl->tag);
-                        printf("out_msg = 0x%p status 0x%x\n", cmpl->out_msg,cmpl->status);
+                        dbg_printf("tag     = 0x%08x\n", cmpl->tag);
+                        dbg_printf("out_msg = 0x%p status 0x%x\n", cmpl->out_msg,cmpl->status);
                         set_ccm_result(cmpl->status);
                         k_sem_give(&ccm_sem);
                         break;
@@ -382,7 +373,6 @@ static void user_packet_handler (uint8_t packet_type, uint16_t channel, const ui
                     {
                         if(get_aes_result()==-1) //it means that
                         {
-                            extern struct k_sem aes_sem;
                             set_aes_result(0);
                             reverse_128(&packet[6],ptr_aestext);
                             k_sem_give(&aes_sem);
@@ -392,15 +382,15 @@ static void user_packet_handler (uint8_t packet_type, uint16_t channel, const ui
                     default:
                         break;
                 }
-                break;
+            break;
 
-            case  HCI_EVENT_LE_META:
+        case HCI_EVENT_LE_META:
                 switch (hci_event_le_meta_get_subevent_code(packet))
                 {
                     case HCI_SUBEVENT_LE_EXTENDED_ADVERTISING_REPORT:
                     {
                         //need to filter the message at first, only for the mesh message
-                        if(filtermeshADV(HCI_EVENT_PACKET,(uint8_t *)packet,size) ==DISCARDED)
+                        if(filtermeshADV(HCI_EVENT_PACKET,(uint8_t *)packet,size) == DISCARDED)
                             break;
                         //it is mesh packet ,then need to find whether its duplicated with previouse one, no need to deliver to mesh task
                         if(memcmp(pre_adv,packet,size)==0)
@@ -417,17 +407,17 @@ static void user_packet_handler (uint8_t packet_type, uint16_t channel, const ui
                         mesh_event.ext_disc.rssi = report->rssi;
                         mesh_event.ext_disc.legacy_event_type = report->evt_type | 0x10;
                         mesh_event.ext_disc.length_data = report->data_len;
-                        //printf("add 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",report->address[0],report->address[1],report->address[2],report->address[3],report->address[4],report->address[5]);
+                        //dbg_printf("add 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",report->address[0],report->address[1],report->address[2],report->address[3],report->address[4],report->address[5]);
                         if(report->data_len==0)
                         {
-                        //    printf("len0\n");
+                        //    dbg_printf("len0\n");
                             return;
                         }
                         DTBT_msg_t *padv = btstack_memory_dtbt_msg_get();
                         //MEM_CHECK_CPY(padv->data,report->data,report->data_len);
                         if(padv==NULL)
                         {
-                            printf("warning:full\n");
+                            dbg_printf("warning:full\n");
                             return ;
                         }
                         ASSERT_ERR(HCI_ACL_PAYLOAD_SIZE+4 > (report->data_len+sizeof(mesh_event)));
@@ -443,7 +433,7 @@ static void user_packet_handler (uint8_t packet_type, uint16_t channel, const ui
                         mesh_event.ext_disc.addr.type = (bd_addr_type_t)report->addr_type;
                         memcpy(padv->data,&mesh_event,sizeof(mesh_event));
                         memcpy(padv->data+sizeof(mesh_event),(uint8_t*)report->data,report->data_len);
-                        //printf("addr 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",report->address[0],report->address[1],report->address[2],report->address[3],report->address[4],report->address[5]);
+                        //dbg_printf("addr 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",report->address[0],report->address[1],report->address[2],report->address[3],report->address[4],report->address[5]);
                         Host2Mesh_msg_send((uint8_t *)padv->data,sizeof(mesh_event)+report->data_len);
                     }
                         break;
@@ -474,7 +464,7 @@ static void user_packet_handler (uint8_t packet_type, uint16_t channel, const ui
 
                     case HCI_SUBEVENT_LE_CONNECTION_COMPLETE:
                     case HCI_SUBEVENT_LE_ENHANCED_CONNECTION_COMPLETE:
-                        printf("le conn 0x%x 0x%x\n",MYNEWT_VAL_BLE_MESH_PB_GATT,MYNEWT_VAL_BLE_MESH_GATT_PROXY);
+                        dbg_printf("le conn 0x%x 0x%x\n", MYNEWT_VAL_BLE_MESH_PB_GATT, MYNEWT_VAL_BLE_MESH_GATT_PROXY);
                         temp_conn_handle = little_endian_read_16(packet,4);
                         break;
 
@@ -485,7 +475,7 @@ static void user_packet_handler (uint8_t packet_type, uint16_t channel, const ui
             case HCI_EVENT_DISCONNECTION_COMPLETE:
                 if((MYNEWT_VAL(BLE_MESH_PB_GATT)) ||  (MYNEWT_VAL(BLE_MESH_GATT_PROXY)))
                 {
-                    printf("discon\n");
+                    dbg_printf("discon\n");
                     if (conn_handle == little_endian_read_16(packet, 3))
                     {
                         mesh_event.type = BLE_GAP_EVENT_DISCONNECT;
@@ -511,10 +501,9 @@ static void user_packet_handler (uint8_t packet_type, uint16_t channel, const ui
                 user_msg_handler(p_user_msg);
             }
             break;
-            default:
-
+        default:
             break;
-}
+    }
 }
 
 
@@ -527,59 +516,6 @@ void mesh_platform_setup()
     mesh_platform_config(2,PB_GATT_MAC_ADDR,NULL);
 }
 
-/**
- * @brief mesh environent initialize
- * @defgroup mesh initialize
- * @ingroup bt_mesh
- * @{
- */
-
-/**
-* @brief mesh environment initialization after device power on
-*
-* @return  0: EOK
-*
-* @note:  1.setup the PB_GATT and PB_ADV platform ,@see mesh_platform_setup()     2. mesh queue and mesh memory pool initialize. @see mesh_memory_init
-*         3.mesh proxy service atrribute handle setup. @see bt_mesh_handle_set    4. if needed, setup the supported and enabled mesh role.(optional) @see mesh_feature_set
-*         5. mesh device model initialization @see model_init()                   6. mesh stack to catch HCI event entry function, and read callback/write callback entry upon GATT connection
-*         7. register mesh device models to mesh stack ,and beacon initialize. @see mesh_main()
-*/
-int mesh_env_init(void)
-{
-    mesh_platform_setup();
-    mesh_memory_init();
-    bt_mesh_handle_set(0x03,0x05,0x03,0x05);//here set the handle of  proxy and prov
-    mesh_feature_set(BT_MESH_FEAT_RELAY|BT_MESH_FEAT_PROXY,BT_MESH_FEAT_PROXY); //setup the feature_role
-    model_init();
-    att_server_init(att_read_callback, att_write_callback);
-    hci_event_callback_registration.callback = &user_packet_handler;
-    hci_add_event_handler(&hci_event_callback_registration);
-    att_server_register_packet_handler(&user_packet_handler);
-    mesh_main(0, NULL);
-    return 0;
-}
-/**
- *@}
- */
-extern int btstack_user_client(void);
-extern void Host_msg_Dispatch(DTBT_msg_head_t* );
-
-static const struct bt_mesh_prov *p_prov = NULL;
-static const struct bt_mesh_comp *p_comp = NULL;
-
-extern const struct bt_mesh_model_op bt_mesh_cfg_cli_op[];
-extern const struct bt_mesh_model_op bt_mesh_cfg_srv_op[];
-extern const struct bt_mesh_model_op bt_mesh_health_srv_op[];
-
-/**
-* @brief  setup the SIG model and vendor model ,as well as setup the provision configuration
-*
-* @param a_prov     a struct to a provision configuration
-*
-* @param a_comp     pointer to a device composition that consist of SIG model and vendor model
-*
-* @return    the size the data to be read
-*/
 void mesh_setup(const struct bt_mesh_prov *a_prov, const struct bt_mesh_comp *a_comp)
 {
     struct bt_mesh_elem *root = a_comp->elem;
@@ -604,11 +540,10 @@ void mesh_setup(const struct bt_mesh_prov *a_prov, const struct bt_mesh_comp *a_
     }
 }
 
-extern uint32_t invoke_evt_cb(platform_evt_callback_type_t type, void *data);
 int mesh_init0()
 {
     int err;
-    printf("Bluetooth initialized\n");
+    dbg_printf("Bluetooth initialized\n");
 
 #if (MYNEWT_VAL(BLE_MESH_SHELL))
     ble_mesh_shell_init();       //note: this shell init should follow PLATFORM_CB_EVT_PROFILE_INIT.
@@ -626,11 +561,11 @@ int mesh_init0()
 
 int mesh_main(int argc, char **argv)
 {
-      mesh_init0();
+    mesh_init0();
 
     /* Make sure we're scanning for provisioning inviations */
     /* Enable unprovisioned beacon sending */
-     bt_mesh_beacon_init();
+    bt_mesh_beacon_init();
     return 0;
 }
 
@@ -641,7 +576,7 @@ void mesh_service_trigger(uint8_t* mesh_msg,uint8_t len)
     DTBT_msg_t *pdata = btstack_memory_dtbt_msg_get();
     if(pdata == NULL)
     {
-        printf("buf full\n");
+        dbg_printf("buf full\n");
         return;
     }
     ASSERT_ERR(HCI_ACL_PAYLOAD_SIZE+4 > (len+sizeof(mesh_event)));
@@ -653,19 +588,14 @@ void mesh_service_trigger(uint8_t* mesh_msg,uint8_t len)
     Host2Mesh_msg_send((uint8_t*)(pdata->data),sizeof(mesh_event)+len);
 }
 
-/**
-* @brief  after node reset, the mesh proxy service need to be restarted.
-*
-*/
 int mesh_srv_restart()
 {
-    printf("reset dis conn %d\n",mesh_event.connect.conn_handle);
+    dbg_printf("reset dis conn %d\n",mesh_event.connect.conn_handle);
     if (conn_handle != 0xffff)
         hci_cmds_put(DISCONNECT,&conn_handle,2);
     else
     {
         bt_mesh_gatt_config(MESH_GATT_PROV);
-        //here start connectable advertising data for gatt_prov service.
         mesh_start_advertising();
     }
     return 0;
@@ -703,11 +633,6 @@ void gap_beacon_enable(void)
         bt_mesh_beacon_enable();
 }
 
-extern uint32_t sleep_duration;
-/**
-* @note 20ms is a minimal advertision interval in mesh task.
-*
-*/
 int8_t set_mesh_sleep_duration(uint32_t ms)
 {
     if(ms >=20)
@@ -721,18 +646,10 @@ int8_t set_mesh_sleep_duration(uint32_t ms)
     }
 }
 
-//below used to setup the uart data output function from APP
-
-mesh_at_out uart_printf = NULL;
-
 void set_mesh_uart_output_func(mesh_at_out ptrfun)
 {
     uart_printf = ptrfun;
 }
-
-uint8_t mesh_at[100]={0};
-uint8_t size =0;
-bool recv_from_uart = false;
 
 void mesh_at_entry(uint8_t* mesh_msg ,uint8_t len)
 {
@@ -740,8 +657,6 @@ void mesh_at_entry(uint8_t* mesh_msg ,uint8_t len)
     recv_from_uart = true;
 }
 
-//this function used to print the response of  AT command.
-static char buf[200];
 int console_printf(const char *fmt, ...)
 {
     if(uart_printf)
@@ -767,7 +682,6 @@ int console_printf(const char *fmt, ...)
         return 0;
 }
 
-extern uint8_t filtermeshADV(uint8_t type, uint8_t *packet, uint8_t size);
 
 uint16_t fea_layer_sel =0;
 uint8_t cla_flag = 0;
@@ -804,7 +718,6 @@ int8_t mesh_provision_disable()
     return EOK;
 }
 
-extern config_status f_config_status;
 void cfg_cli_callback_set(config_status f_status)
 {
     f_config_status =  f_status;
@@ -816,16 +729,7 @@ void mesh_clear_whitlist(void)
     return;
 }
 
-extern uint8_t uuid_head[16];
-extern uint8_t uuid_head_len;
 
-/**
-* @brief  this API is used for provisioner , set the uuid filter head ,so it would filter those that need to be provisioned device.
-*
-* @param  uuid   uuid head
-*
-* @param  len    length of uuid head to be filtered
-*/
 void uuid_filter_set(const uint8_t * uuid,uint8_t len)
 {
     if (len==0)
@@ -834,5 +738,39 @@ void uuid_filter_set(const uint8_t * uuid,uint8_t len)
     }
     memcpy(uuid_head,uuid,len);
     uuid_head_len = len;
-    printf("set the filter uuid 0x%x 0x%x 0x%x \n",uuid_head[0],uuid_head[1],uuid_head[2]);
+    dbg_printf("set the filter uuid 0x%x 0x%x 0x%x \n",uuid_head[0],uuid_head[1],uuid_head[2]);
 }
+
+void model_init()
+{
+    dbg_printf("begin to setup comp\n");
+    nimble_port_init();
+    init_pub();
+    model_info_pub();
+    mesh_setup(&prov, get_comp_of_node());
+    model_conf_init();
+}
+
+int mesh_env_init(void)
+{
+    sysSetPublicDeviceAddr(addr);
+    mesh_platform_setup();
+    mesh_memory_init();
+    bt_mesh_handle_set(0x03,0x05,0x03,0x05);//here set the handle of  proxy and prov
+    mesh_feature_set(BT_MESH_FEAT_RELAY|BT_MESH_FEAT_PROXY,BT_MESH_FEAT_PROXY); //setup the feature_role
+
+    model_init();
+
+    att_server_init(att_read_callback, att_write_callback);
+    hci_event_callback_registration.callback = &user_packet_handler;
+    hci_add_event_handler(&hci_event_callback_registration);
+    att_server_register_packet_handler(&user_packet_handler);
+    mesh_main(0, NULL);
+
+    return 0;
+}
+
+#if defined __cplusplus
+    }
+#endif
+

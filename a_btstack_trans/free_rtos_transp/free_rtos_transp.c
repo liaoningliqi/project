@@ -78,10 +78,10 @@ uint32_t invoke_evt_cb(platform_evt_callback_type_t type, void *data, uint8_t lo
     switch (type)
     {
     case PLATFORM_CB_HEAP_OOM:
-        printf("oom%d", (uint32_t)(data));
+        dbg_printf("oom%d", (uint32_t)(data));
         break;
     case PLATFORM_CB_EVT_ASSERTION:
-        printf("[ERR]@%s:%d", assertion_info.file_name, assertion_info.line_no);
+        dbg_printf("[ERR]@%s:%d", assertion_info.file_name, assertion_info.line_no);
         break;
     }
 
@@ -138,7 +138,7 @@ static void irq_setup()
 
 static void ut_task(void *pdata)
 {
-    printf("hi");
+    dbg_printf("hi");
     while (1) {
         GIO_WriteValue(GIO_GPIO_6, 0);
         vTaskDelay(pdMS_TO_TICKS( 200 ));
