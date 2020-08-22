@@ -201,6 +201,9 @@ bool recv_from_uart = false;
 
 static char buf[200];
 
+uint16_t fea_layer_sel =0;
+uint8_t cla_flag = 0;
+
 static void prov_complete(u16_t net_idx, u16_t addr)
 {
     dbg_printf("provisioning complete for net_idx 0x%04x addr 0x%04x", net_idx, addr);
@@ -549,12 +552,14 @@ int mesh_init0()
     ble_mesh_shell_init();       //note: this shell init should follow PLATFORM_CB_EVT_PROFILE_INIT.
 #endif
 
-    if ((NULL == p_prov) || (NULL == p_comp))
+    if ((NULL == p_prov) || (NULL == p_comp)) {
         PANIC("prov/comp not initialized");
+    }
 
     err = bt_mesh_init(1, p_prov, p_comp);
-    if (err)
+    if (err) {
         PANIC("Initializing mesh failed (err %d)\n", err);
+    }
 
     return 0;
 }
@@ -571,30 +576,28 @@ int mesh_main(int argc, char **argv)
 
 void mesh_service_trigger(uint8_t* mesh_msg,uint8_t len)
 {
-    memset(&mesh_event,0,sizeof(mesh_event));
+    memset(&mesh_event, 0, sizeof(mesh_event));
     mesh_event.type = BLE_MESH_APP_EVENT;
     DTBT_msg_t *pdata = btstack_memory_dtbt_msg_get();
-    if(pdata == NULL)
-    {
+    if(pdata == NULL) {
         dbg_printf("buf full\n");
         return;
     }
-    ASSERT_ERR(HCI_ACL_PAYLOAD_SIZE+4 > (len+sizeof(mesh_event)));
+    ASSERT_ERR(HCI_ACL_PAYLOAD_SIZE + 4 > (len+sizeof(mesh_event)));
     mesh_event.type = BLE_MESH_APP_EVENT;
     mesh_event.mesh_app.length = len;
     mesh_event.mesh_app.data = pdata->data + sizeof(mesh_event);
-    memcpy(pdata->data,&mesh_event,sizeof(mesh_event));
-    memcpy(pdata->data+sizeof(mesh_event),mesh_msg,len);
-    Host2Mesh_msg_send((uint8_t*)(pdata->data),sizeof(mesh_event)+len);
+    memcpy(pdata->data, &mesh_event, sizeof(mesh_event));
+    memcpy(pdata->data+sizeof(mesh_event), mesh_msg,len);
+    Host2Mesh_msg_send((uint8_t*)(pdata->data), sizeof(mesh_event) + len);
 }
 
 int mesh_srv_restart()
 {
     dbg_printf("reset dis conn %d\n",mesh_event.connect.conn_handle);
-    if (conn_handle != 0xffff)
+    if (conn_handle != 0xffff) {
         hci_cmds_put(DISCONNECT,&conn_handle,2);
-    else
-    {
+    } else {
         bt_mesh_gatt_config(MESH_GATT_PROV);
         mesh_start_advertising();
     }
@@ -609,39 +612,34 @@ void reset_con_handle()
 
 void gap_beacon_disable(void)
 {
-    if(!is_mesh_task())
-    {
+    if (!is_mesh_task())  {
         memset(&mesh_event,0,sizeof(mesh_event));
         mesh_event.type = BLE_MESH_BEACON_STATE;
         mesh_event.beacon_state.enable = 0;
         Host2Mesh_msg_send((uint8_t*)&mesh_event,sizeof(mesh_event));
-    }
-    else
+    } else {
         bt_mesh_beacon_disable();
+    }
 }
 
 void gap_beacon_enable(void)
 {
-    if(!is_mesh_task())
-    {
+    if (!is_mesh_task()) {
         memset(&mesh_event,0,sizeof(mesh_event));
         mesh_event.type = BLE_MESH_BEACON_STATE;
         mesh_event.beacon_state.enable = 1;
         Host2Mesh_msg_send((uint8_t*)&mesh_event,sizeof(mesh_event));
-    }
-    else
+    } else {
         bt_mesh_beacon_enable();
+    }
 }
 
 int8_t set_mesh_sleep_duration(uint32_t ms)
 {
-    if(ms >=20)
-    {
+    if (ms >=20) {
         sleep_duration = ms;
         return EOK;
-    }
-    else
-    {
+    } else {
         return -EPERM;
     }
 }
@@ -659,8 +657,7 @@ void mesh_at_entry(uint8_t* mesh_msg ,uint8_t len)
 
 int console_printf(const char *fmt, ...)
 {
-    if(uart_printf)
-    {
+    if (uart_printf) {
         va_list args;
         int num_chars;
         int len;
@@ -668,7 +665,7 @@ int console_printf(const char *fmt, ...)
 
         num_chars = 0;
         va_start(args, fmt);
-        len = vsnprintf(buf,sizeof(buf),fmt,args);
+        len = vsnprintf(buf, sizeof(buf), fmt, args);
         num_chars += len;
         if (len >= sizeof(buf)) {
             len = sizeof(buf) - 1;
@@ -677,33 +674,28 @@ int console_printf(const char *fmt, ...)
         va_end(args);
 
         return num_chars;
-    }
-    else
+    } else {
         return 0;
+    }
 }
 
-
-uint16_t fea_layer_sel =0;
-uint8_t cla_flag = 0;
 void mesh_trace_config(uint16_t sel_bits,uint16_t cla_bit)
 {
     fea_layer_sel =  sel_bits;
     cla_flag = cla_bit;
     return;
 }
+
 int8_t mesh_provision_start(void)
 {
     //check whether the device is provisioned or not
-    if (is_provisioned_poweron() || bt_mesh_is_provisioned() )
-    {
+    if (is_provisioned_poweron() || bt_mesh_is_provisioned()) {
         memset(&mesh_event,0,sizeof(mesh_event));
         mesh_event.type = DEVICE_ROLE;
         mesh_event.device_role.role = PROVISIONER_ROLE;
         Host2Mesh_msg_send((uint8_t*)&mesh_event,sizeof(mesh_event));
         return EOK;
-    }
-    else
-    {
+    } else {
         return -1;
     }
 
@@ -729,11 +721,9 @@ void mesh_clear_whitlist(void)
     return;
 }
 
-
 void uuid_filter_set(const uint8_t * uuid,uint8_t len)
 {
-    if (len==0)
-    {
+    if (len==0) {
         return;
     }
     memcpy(uuid_head,uuid,len);
@@ -756,7 +746,7 @@ int mesh_env_init(void)
     sysSetPublicDeviceAddr(addr);
     mesh_platform_setup();
     mesh_memory_init();
-    bt_mesh_handle_set(0x03,0x05,0x03,0x05);//here set the handle of  proxy and prov
+    bt_mesh_handle_set(0x03, 0x05, 0x03, 0x05);//here set the handle of  proxy and prov
     mesh_feature_set(BT_MESH_FEAT_RELAY|BT_MESH_FEAT_PROXY,BT_MESH_FEAT_PROXY); //setup the feature_role
 
     model_init();
