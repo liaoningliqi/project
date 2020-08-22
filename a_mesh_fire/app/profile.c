@@ -13,7 +13,7 @@
 #include "btstack_util.h"
 #include "platform_api.h"
 #include "ota_service.h"
-#include "light_model.h"
+#include "ble_mesh_light_model.h"
 #include "device_composition.h"
 #include "att_db_util.h"
 #include "gatt_client.h"
@@ -23,8 +23,8 @@
 
 #include "app.h"
 #include "chip_peripherals.h"
-#include "light_model.h"
-#include "..\mesh\BLE_mesh.h"
+#include "ble_mesh_light_model.h"
+#include "ble_mesh.h"
 #include "..\..\project_common\project_common.h"
 
 #if defined __cplusplus

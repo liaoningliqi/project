@@ -3,7 +3,7 @@
  */
 
 #include <stdio.h>
-#include "light_model.h"
+#include "ble_mesh_light_model.h"
 #include "state_binding.h"
 #include "device_composition.h"
 #include "transition.h"

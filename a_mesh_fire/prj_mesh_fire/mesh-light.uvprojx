@@ -390,19 +390,24 @@
               <FilePath>..\app\profile.c</FilePath>
             </File>
             <File>
-              <FileName>light_model.c</FileName>
+              <FileName>ble_mesh_light_model.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\app\light_model.c</FilePath>
+              <FilePath>..\app\ble_mesh_light_model.c</FilePath>
             </File>
             <File>
-              <FileName>mesh_flash_oper.c</FileName>
+              <FileName>ble_mesh_flash_oper.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\app\mesh_flash_oper.c</FilePath>
+              <FilePath>..\app\ble_mesh_flash_oper.c</FilePath>
             </File>
             <File>
               <FileName>chip_peripherals.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\chip_peripherals.c</FilePath>
+            </File>
+            <File>
+              <FileName>ble_mesh_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\ble_mesh_app.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -492,22 +497,22 @@
             <File>
               <FileName>mesh_srv.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Mesh\mesh_srv.c</FilePath>
+              <FilePath>..\..\..\src\Mesh\mesh_srv.c</FilePath>
             </File>
             <File>
               <FileName>device_composition.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Mesh\device_composition.c</FilePath>
+              <FilePath>..\..\..\src\Mesh\device_composition.c</FilePath>
             </File>
             <File>
               <FileName>state_binding.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Mesh\state_binding.c</FilePath>
+              <FilePath>..\..\..\src\Mesh\state_binding.c</FilePath>
             </File>
             <File>
               <FileName>transition.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Mesh\transition.c</FilePath>
+              <FilePath>..\..\..\src\Mesh\transition.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -517,7 +522,7 @@
             <File>
               <FileName>Mesh.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>..\..\..\meshlib\Mesh.lib</FilePath>
+              <FilePath>..\..\..\src\Mesh\Mesh.lib</FilePath>
             </File>
           </Files>
         </Group>

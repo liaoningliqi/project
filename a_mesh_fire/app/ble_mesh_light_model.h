@@ -68,5 +68,6 @@ void HSL_PWM_LED(uint16_t hue,uint16_t sa, uint16_t light);
 int light_reset(uint16_t light, uint8_t cw);
 
 int light_power_on(void);
+void update_light_state(void);
 
 #endif

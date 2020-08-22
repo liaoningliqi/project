@@ -13,11 +13,11 @@
 
 #include "mesh_def.h"
 
-#include "..\mesh\BLE_mesh.h"
+#include "ble_mesh.h"
 #include "chip_peripherals.h"
-#include "mesh_flash_oper.h"
+#include "ble_mesh_flash_oper.h"
 #include "..\..\project_common\project_common.h"
-#include "light_model.h"
+#include "ble_mesh_light_model.h"
 
 #if defined __cplusplus
     extern "C" {
