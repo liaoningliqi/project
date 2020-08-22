@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "btstack_event.h"
+
 #include "platform_api.h"
 #include "peripheral_gpio.h"
 
@@ -34,50 +36,45 @@ void kb_report_trigger_send(uint8_t key)
     btstack_push_user_msg(key, NULL, 0);// 发送给controller 按键trigger触发
 }
 
-uint8_t kb_notify_enable;
 void kb_state_changed(uint8_t key)
 {
-	if(key==1)
-	{
+    if(key==1) {
         kb_report_trigger_send(USER_MSG_ID_REQUEST_SEND_KB1);
-	}
-	else
-	{
+    } else {
         kb_report_trigger_send(USER_MSG_ID_REQUEST_SEND_KB2);
-	}
+    }
+
+    return;
 }
 
 void delay(int cycles)
 {
     int i;
-    for (i = 0; i < cycles; i++)
-    {
+    for (i = 0; i < cycles; i++) {
         __nop();
     }
 }
+
+#define pulse()                     \
+    { GIO_WriteValue(PIN_SDI, 1);   \
+    delay(1);                       \
+    GIO_WriteValue(PIN_SDI, 0); } while (0)
 
 void tlc59731_write(uint32_t value)
 {
     int8_t i;
 
-    #define pulse()                     \
-        { GIO_WriteValue(PIN_SDI, 1);   \
-        delay(1);                       \
-        GIO_WriteValue(PIN_SDI, 0); } while (0)
-
-    for( i = 0; i < 32; i++ )
-    {
-        uint32_t bit = value & ( 0x80000000 >> i );
+    for( i = 0; i < 32; i++ ) {
+        uint32_t bit = value & (0x80000000 >> i);
         pulse();
 
-        if (bit)
-        {
+        if (bit) {
             delay(10);
             pulse();
             delay(78);
-        }
-        else
+        } else {
             delay(90);
+        }
     }
     delay(100 * 8);
 }
@@ -92,18 +89,15 @@ uint32_t peripherals_gpio_isr(void *user_data)
 {
     uint32_t current = ~GIO_ReadAll();
 
-    // report which keys are pressed
-    if (current & (1 << KB_KEY_1))
-    {
-        printf("KB_KEY_1_isr!!\r\n");
+    if (current & (1 << KB_KEY_1)) {
+        dbg_printf("KB_KEY_1_isr!!\r\n");
         kb_state_changed(1);
-    }
-    else if (current & (1 << KB_KEY_2))
-    {
-        printf("KB_KEY_2_isr!!\r\n");
+    } else if (current & (1 << KB_KEY_2)) {
+        dbg_printf("KB_KEY_2_isr!!\r\n");
         kb_state_changed(2);
+    } else {
     }
-    else;
+
     GIO_ClearAllIntStatus();
     return 0;
 }

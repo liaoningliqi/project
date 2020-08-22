@@ -60,7 +60,7 @@ void reconf_timer_callback_entry(struct ble_npl_callout *co, struct ble_npl_even
     co->evq  = evq;
     memset(ev, 0, sizeof(*ev));
     ev->fn = ev_cb;
-    ev->arg = ev_arg;    
+    ev->arg = ev_arg;
 }
 void calculate_rt(struct transition *transition)
 {
@@ -192,10 +192,10 @@ void level_tt_values(struct generic_level_state *state, u8_t tt, u8_t delay)
 	if (tt != 0) {
 		tt_values_calculator(state->transition);
 	} else {
-        state->transition->quo_tt =0;       
+        state->transition->quo_tt =0;
 		return;
 	}
-    
+
 	state->transition->quo_tt = state->transition->total_duration /
 					state->transition->counter;
 
@@ -215,7 +215,7 @@ void light_lightness_actual_tt_values(struct light_lightness_state *state,
 	if (tt != 0) {
 		tt_values_calculator(state->transition);
 	} else {
-        state->transition->quo_tt =0;      
+        state->transition->quo_tt =0;
 		return;
 	}
 
@@ -238,7 +238,7 @@ void light_lightness_linear_tt_values(struct light_lightness_state *state,
 	if (tt != 0) {
 		tt_values_calculator(state->transition);
 	} else {
-        state->transition->quo_tt =0;       
+        state->transition->quo_tt =0;
 		return;
 	}
 
@@ -260,7 +260,7 @@ void light_ctl_tt_values(struct light_ctl_state *state, u8_t tt, u8_t delay)
 	if (tt != 0) {
 		tt_values_calculator(state->transition);
 	} else {
-        state->transition->quo_tt = 0;       
+        state->transition->quo_tt = 0;
 		return;
 	}
 
@@ -291,7 +291,7 @@ void light_ctl_temp_tt_values(struct light_ctl_state *state,
 	if (tt != 0) {
 		tt_values_calculator(state->transition);
 	} else {
-        state->transition->quo_tt = 0;           
+        state->transition->quo_tt = 0;
 		return;
 	}
 
@@ -346,7 +346,7 @@ static void onoff_work_handler(struct ble_npl_event *work)
 
 		state_binding(IGNORE, IGNORE_TEMP);
 		update_light_state();
-        
+
 		ble_npl_callout_stop(ptr_timer);
 	}
 }
@@ -630,7 +630,7 @@ static void onoff_tt_handler(struct ble_npl_event *ev)
     //avoid to repeatly call the transition timer once counter is 0
 //    if((state->transition->counter == 0) && (state->target_onoff == state->onoff))
 //    {
-//        printf("tt stopped\n");        
+//        printf("tt stopped\n");
 //        return;
 //    }
 	ble_npl_callout_reset(&onoff_work, 0);
@@ -646,13 +646,13 @@ static void onoff_tt_handler(struct ble_npl_event *ev)
 static void level_lightness_tt_handler(struct ble_npl_event *ev)
 {
 	struct generic_level_state *state = ble_npl_event_get_arg(ev);
-    printf("transition timer quo_tt 0x%x\n",K_MSEC(state->transition->quo_tt));    
+    printf("transition timer quo_tt 0x%x\n",K_MSEC(state->transition->quo_tt));
 	assert(state != NULL);
     if(state->level == state->target_level) //avoid to start the timer repeately once the target lightness has reached.
         return;
 	ble_npl_callout_reset(&level_lightness_work, 0);
     if(state->transition->quo_tt>0)
-    {        
+    {
         ble_npl_callout_reset(&state->transition->timer,
 			      ble_npl_time_ms_to_ticks32(
 				      K_MSEC(state->transition->quo_tt)));
@@ -694,7 +694,7 @@ static void light_lightness_linear_tt_handler(struct ble_npl_event *ev)
 	assert(state != NULL);
 	ble_npl_callout_reset(&light_lightness_linear_work, 0);
     if(state->transition->quo_tt>0)
-    {        
+    {
         ble_npl_callout_reset(&state->transition->timer,
 			      ble_npl_time_ms_to_ticks32(
 				      K_MSEC(state->transition->quo_tt)));
@@ -739,7 +739,7 @@ void onoff_handler(struct generic_onoff_state *state)
     else
     {
         reconf_timer_callback_entry(ptr_timer, ble_npl_eventq_dflt_get(),
-			     onoff_tt_handler, NULL);  
+			     onoff_tt_handler, NULL);
     }
 	ble_npl_callout_set_arg(ptr_timer, state);
     if(state->transition->delay==0)
@@ -776,7 +776,7 @@ void level_temp_handler(struct generic_level_state *state)
 			     level_temp_tt_handler, NULL);
     else
         reconf_timer_callback_entry(ptr_timer, ble_npl_eventq_dflt_get(),
-			     level_temp_tt_handler, NULL);  
+			     level_temp_tt_handler, NULL);
 	ble_npl_callout_set_arg(ptr_timer, state);
 	ble_npl_callout_reset(ptr_timer,
 			      ble_npl_time_ms_to_ticks32(
@@ -792,7 +792,7 @@ void light_lightness_actual_handler(struct light_lightness_state *state)
     else
         reconf_timer_callback_entry(ptr_timer, ble_npl_eventq_dflt_get(),
 			     light_lightness_actual_tt_handler, NULL);
-    printf("lightness--22 0x%x fun 0x%x\n",ptr_timer->handle,ptr_timer->ev.fn);    
+    printf("lightness--22 0x%x fun 0x%x\n",ptr_timer->handle,ptr_timer->ev.fn);
 	ble_npl_callout_set_arg(ptr_timer,
 				state);
 	ble_npl_callout_reset(ptr_timer,
@@ -808,7 +808,7 @@ void light_lightness_linear_handler(struct light_lightness_state *state)
 			     light_lightness_linear_tt_handler, NULL);
     else
         reconf_timer_callback_entry(ptr_timer, ble_npl_eventq_dflt_get(),
-			     light_lightness_linear_tt_handler, NULL);    
+			     light_lightness_linear_tt_handler, NULL);
 	ble_npl_callout_set_arg(ptr_timer,
 				state);
 	ble_npl_callout_reset(ptr_timer,
@@ -824,7 +824,7 @@ void light_ctl_handler(struct light_ctl_state *state)
 			     light_ctl_tt_handler, NULL);
     else
         reconf_timer_callback_entry(ptr_timer, ble_npl_eventq_dflt_get(),
-			     light_ctl_tt_handler, NULL);        
+			     light_ctl_tt_handler, NULL);
 	ble_npl_callout_set_arg(ptr_timer, state);
 	ble_npl_callout_reset(ptr_timer,
 			      ble_npl_time_ms_to_ticks32(

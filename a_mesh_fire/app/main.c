@@ -45,7 +45,6 @@ int fputc(int ch, FILE *f)
 int app_main()
 {
     platform_set_evt_callback(PLATFORM_CB_EVT_PUTC, (f_platform_evt_cb)cb_putc, NULL);
-    sysSetPublicDeviceAddr((uint8_t *)0x2a100);
     chip_peripherals_init();
 
     fast_switch_monitor_init();

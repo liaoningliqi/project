@@ -23,6 +23,9 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
+
+#include "stdio.h"
+
 #include "mesh_api.h"
 #include "access.h"
 #include "model_srv.h"
@@ -110,8 +113,8 @@ static struct bt_mesh_model_pub light_lightness_cli_pub;
 static struct bt_mesh_model_pub light_ctl_srv_pub;
 //static struct bt_mesh_model_pub light_ctl_cli_pub;
 static struct bt_mesh_model_pub vnd_pub;
-static struct bt_mesh_model_pub gen_level_srv_pub_s0;
-static struct bt_mesh_model_pub gen_level_cli_pub_s0;
+//static struct bt_mesh_model_pub gen_level_srv_pub_s0;
+//static struct bt_mesh_model_pub gen_level_cli_pub_s0;
 
 static struct os_mbuf *bt_mesh_pub_msg_health_pub;
 static struct os_mbuf *bt_mesh_pub_msg_gen_onoff_srv_pub_root;
@@ -2830,10 +2833,10 @@ struct bt_mesh_model * get_model_by_id(uint16_t id)
 bool get_group_addr_by_id(uint16_t id,uint16_t* group)
 {
     struct bt_mesh_model *pmod = get_model_by_id(id);
-    if(pmod==NULL)
+    if(pmod == NULL)
         return false;
     uint8_t i = CONFIG_BT_MESH_MODEL_GROUP_COUNT;
-    for (i =0; i<CONFIG_BT_MESH_MODEL_GROUP_COUNT;i++)
+    for (i = 0; i < CONFIG_BT_MESH_MODEL_GROUP_COUNT; i++)
     {
         pmod->groups[i] != BT_MESH_ADDR_UNASSIGNED;
         *group = pmod->groups[i];

@@ -544,7 +544,8 @@ void mesh_platform_setup()
 *         5. mesh device model initialization @see model_init()                   6. mesh stack to catch HCI event entry function, and read callback/write callback entry upon GATT connection
 *         7. register mesh device models to mesh stack ,and beacon initialize. @see mesh_main()
 */
-int mesh_env_init(){
+int mesh_env_init(void)
+{
     mesh_platform_setup();
     mesh_memory_init();
     bt_mesh_handle_set(0x03,0x05,0x03,0x05);//here set the handle of  proxy and prov

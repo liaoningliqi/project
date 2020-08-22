@@ -95,7 +95,7 @@ static void constrain_target_lightness(u16_t var)
 	} else if (var > light_lightness_srv_user_data.light_range_max) {
 		var = light_lightness_srv_user_data.light_range_max;
 	}
-    
+
 	target_lightness = var;
     printf("targetness 0x%x\n",target_lightness);
 }

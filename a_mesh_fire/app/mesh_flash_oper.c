@@ -8,6 +8,8 @@
 #include "profile.h"
 #include "kv_storage.h"
 
+#include "..\..\project_common\project_common.h"
+
 #ifdef __cplusplus
 #extern "C" {
 #endif
@@ -28,49 +30,6 @@ int8_t after_power_on()
     counter = 0;
     kv_put(FAST_POWER_ON_FLASH_INDEX,&counter,sizeof(counter));
     return 1;
-}
-
-int8_t fast_switch_monitor()
-{
-//	EflashCacheBypass();
-//	EflashProgramEnable();
-// 	EraseEFlashPage(0x28);
-// 	EraseEFlashPage(0x29);
-// 	EflashProgramDisable();
-// 	EflashCacheEna();
-// 	EflashCacheFlush();
-    int16_t len = 0;
-    uint8_t *db = NULL;
-    k_delayed_work_init(&switch_onff,(ble_npl_event_fn *)after_power_on);
-    //read from flash ,to get the state of last power off;
-    db = kv_get(FAST_POWER_ON_FLASH_INDEX,&len);
-    if (!db)
-    {
-        counter =1;
-        kv_put(FAST_POWER_ON_FLASH_INDEX,&counter,sizeof(uint8_t));
-    }
-    else
-    {
-        //get the current value;
-        counter = *((uint8_t*)db);
-        counter++;
-        printf("counter 0x%x\n",counter-1);
-    }
-    if(counter>=reset_count)
-    {
-           printf("reset start\n");
-           counter = 0;
-           initial_fac_conf();
-           return 1;
-    }
-    else
-    {
-        kv_put(FAST_POWER_ON_FLASH_INDEX,&counter,sizeof(uint8_t));
-        kv_commit();
-    }
-    platform_printf("5s start\n");
-    k_delayed_work_submit(&switch_onff,5000);
-    return 0;
 }
 
 /**
@@ -139,6 +98,49 @@ int db_mesh_write_to_flash(const void *db, const int size)
 int read_mesh_from_flash(void *db, const int max_size)
 {
     memcpy((uint8_t*)db,(uint8_t*)(MESH_FLASH_ADDRESS), max_size);
+    return 0;
+}
+
+int8_t fast_switch_monitor()
+{
+//	EflashCacheBypass();
+//	EflashProgramEnable();
+// 	EraseEFlashPage(0x28);
+// 	EraseEFlashPage(0x29);
+// 	EflashProgramDisable();
+// 	EflashCacheEna();
+// 	EflashCacheFlush();
+    int16_t len = 0;
+    uint8_t *db = NULL;
+    k_delayed_work_init(&switch_onff,(ble_npl_event_fn *)after_power_on);
+    //read from flash ,to get the state of last power off;
+    db = kv_get(FAST_POWER_ON_FLASH_INDEX,&len);
+    if (!db)
+    {
+        counter =1;
+        kv_put(FAST_POWER_ON_FLASH_INDEX,&counter,sizeof(uint8_t));
+    }
+    else
+    {
+        //get the current value;
+        counter = *((uint8_t*)db);
+        counter++;
+        printf("counter 0x%x\n",counter-1);
+    }
+    if(counter>=reset_count)
+    {
+           printf("reset start\n");
+           counter = 0;
+           initial_fac_conf();
+           return 1;
+    }
+    else
+    {
+        kv_put(FAST_POWER_ON_FLASH_INDEX,&counter,sizeof(uint8_t));
+        kv_commit();
+    }
+    dbg_printf("5s start\n");
+    k_delayed_work_submit(&switch_onff,5000);
     return 0;
 }
 

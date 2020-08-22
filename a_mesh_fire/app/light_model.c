@@ -18,11 +18,21 @@
 #define TRUE 1
 #define FALSE (!TRUE)
 #endif
-
+/*
 const uint16_t MAX_TEMP =  0x4E20;
 const uint16_t MIN_TEMP =  0x0320;
 const uint16_t DIS_TEMP =  MAX_TEMP - MIN_TEMP;
 const uint16_t MID_TEMP =  (MAX_TEMP+MIN_TEMP)/2;
+*/
+
+#define MAX_TEMP 0x4E20
+#define MIN_TEMP 0x0320
+#define DIS_TEMP (MAX_TEMP - MIN_TEMP)
+#define MID_TEMP ((MAX_TEMP + MIN_TEMP) / 2)
+
+
+
+
 bool light_status_set = false;
 bool last_light_status = false;
 u8_t gen_onoff_state;
@@ -535,7 +545,7 @@ int light_power_on()
     gen_onoff_state =1;
     uint32_t count_m;
     uint32_t count_n ;
-    uint16_t light =0;
+    //uint16_t light =0;
     uint8_t  cw=0;
 #if (FLASH_ENABLE)
     struct cached_data_t  ctword={0};
@@ -633,7 +643,7 @@ void light_default_var_init(void)
 
 void light_default_status_init(void)
 {
-	u16_t lightness;
+	//u16_t lightness;
     //read from the flash,the last value for lightness and light temperature
     uint32_t t1 = ((gen_level_state+32768));
     uint32_t t2 = (MIN_TEMP +  DIS_TEMP *(100-GCW)/100);
