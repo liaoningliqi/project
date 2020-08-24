@@ -45,5 +45,3 @@ void update_led_command(remote_control_adv_t remote_control_adv_t, uint8_t lengt
 
 #endif
 
-
-

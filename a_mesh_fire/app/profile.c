@@ -39,7 +39,7 @@ static uint16_t temp_OTA_CONN_HANDLE = INVALID_HANDLE;
 
 static btstack_packet_callback_registration_t hci_event_callback_registration;
 
-const uint8_t adv_data[] = {
+static const uint8_t adv_data[] = {
     // Flags general discoverable
     0x02, 0x01, 0x06,
     //Tx Power
@@ -49,23 +49,20 @@ const uint8_t adv_data[] = {
 };
 
 #ifdef V2
-ota_ver_t this_version = {
+static ota_ver_t this_version = {
     .app = {.major = 1, .minor = 2, .patch = 0}
 };
-unsigned char pub_addr[] = {6, 5, 4, 2, 2, 2};
+static unsigned char pub_addr[] = {6, 5, 4, 2, 2, 2};
 #else
-ota_ver_t this_version = {
+static ota_ver_t this_version = {
     .app = {.major = 1, .minor = 1, .patch = 0}
 };
-unsigned char pub_addr[] = {6, 5, 4, 1, 1, 1};
+static unsigned char pub_addr[] = {6, 5, 4, 1, 1, 1};
 #endif
 
-kb_report_t report =
-{
-    .modifier = 0,
-    .reserved = 0,
-    .codes = {0}
-};
+static uint8_t addr2[8]={0x01,0x01,0x01,0x04,0x05,0x06};
+static uint8_t att_db_storage[800];
+static uint8_t vnd_msg[4]={0xcf,0x09,0xF0,0x23};
 
 #ifdef USE_OOB
 static int output_number(bt_mesh_output_action_t action, u32_t number)
@@ -91,10 +88,6 @@ int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_handle, 
 {
     return ota_write_callback(att_handle, transaction_mode, offset, (uint8_t*)buffer, buffer_size);
 }
-
-uint8_t addr2[8]={0x01,0x01,0x01,0x04,0x05,0x06};
-uint8_t att_db_storage[800];
-uint8_t vnd_msg[4]={0xcf,0x09,0xF0,0x23};
 
 static void user_msg_handler(uint32_t msg_id, void *data, uint16_t size)
 {
