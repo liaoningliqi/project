@@ -8,6 +8,7 @@
 
 #include "mesh_api.h"
 #include "mesh_def.h"
+#include "device_composition.h"
 
 #include "project_common.h"
 #include "BLE_mesh.h"
@@ -94,9 +95,9 @@ static void prov_complete(u16_t net_idx, u16_t addr)
     GIO_SetDirection(PIN_SDI, GIO_DIR_OUTPUT);
     GIO_WriteValue(PIN_SDI, 0);
 
-    if(!light_status_set) {
+    if(!g_ble_mesh_light_model_status_set) {
         set_led_color(50, 50, 50);
-        light_status_set = false;
+        g_ble_mesh_light_model_status_set = false;
     }
 }
 
@@ -123,7 +124,7 @@ void model_init()
     init_pub();
     model_info_pub();
     mesh_setup(&prov, get_comp_of_node());
-    model_conf_init();
+    ble_mesh_light_model_conf_init();
 }
 
 #if defined __cplusplus

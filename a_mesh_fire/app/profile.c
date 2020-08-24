@@ -4,27 +4,25 @@
 */
 
 #include <stdio.h>
+#include <stdint.h>
+
+#include "btstack_event.h"
+#include "att_db.h"
+#include "att_db_util.h"
+
 #include "mesh_def.h"
 #include "mesh_api.h"
-#include "access.h"
-#include "bt_types.h"
-#include "gap.h"
-#include "btstack_event.h"
-#include "btstack_util.h"
-#include "platform_api.h"
 #include "ota_service.h"
-#include "ble_mesh_light_model.h"
+#include "access.h"
 #include "device_composition.h"
-#include "att_db_util.h"
-#include "gatt_client.h"
-#include "att_db.h"
-#include "profile.h"
+
 #include "eflash.h"
 
 #include "app.h"
 #include "chip_peripherals.h"
 #include "ble_mesh_light_model.h"
 #include "ble_mesh.h"
+#include "profile.h"
 #include "..\..\project_common\project_common.h"
 
 #if defined __cplusplus
@@ -115,12 +113,12 @@ static void user_msg_handler(uint32_t msg_id, void *data, uint16_t size)
                 pmsg.app_idx = 0;
                 pmsg.dst = 0x015e;
                 pmsg.opcode = BT_MESH_MODEL_OP_2(0x82, 0x04);
-                if(1 == gen_onoff_state) {
+                if(1 == g_ble_mesh_light_model_onoff_state) {
                     key_status=0;
-                    gen_onoff_state=0;
+                    g_ble_mesh_light_model_onoff_state=0;
                     set_led_color(0,0,0);
                 } else {
-                    gen_onoff_state=1;
+                    g_ble_mesh_light_model_onoff_state=1;
                     key_status=1;
                     set_led_color(50,50,50);
                 }

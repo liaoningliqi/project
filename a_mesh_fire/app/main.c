@@ -12,6 +12,7 @@
 #include "profile.h"
 
 #include "mesh_def.h"
+#include "mesh_api.h"
 
 #include "ble_mesh.h"
 #include "chip_peripherals.h"

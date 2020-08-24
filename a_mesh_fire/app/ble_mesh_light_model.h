@@ -1,12 +1,16 @@
+
 /*
- * Copyright (c) 2017 Intel Corporation
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-#ifndef __BT_MESH_LIGHT_MODEL_H
-#define __BT_MESH_LIGHT_MODEL_H
+** COPYRIGHT (c) 2020 by INGCHIPS
+*/
+
+#ifndef __BLE_MESH_LIGHT_MODEL_H__
+#define __BLE_MESH_LIGHT_MODEL_H__
 
 #include "mesh_def.h"
+
+#if defined __cplusplus
+    extern "C" {
+#endif
 
 typedef struct HSL_VAL
 {
@@ -28,8 +32,8 @@ struct cached_data_t
     uint8_t status;
 };
 
-extern bool light_status_set;
-extern u8_t gen_onoff_state;
+extern bool g_ble_mesh_light_model_status_set;
+extern u8_t g_ble_mesh_light_model_onoff_state;
 
 int light_model_gen_onoff_get(struct bt_mesh_model *model, u8_t *state);
 
@@ -59,7 +63,7 @@ void update_light_state(void);
 
 uint32_t PWM_CONFIG(uint8_t VAL,uint8_t PIN);
 
-int model_conf_init(void);
+int ble_mesh_light_model_conf_init(void);
 
 void light_ctl_adjust(uint8_t WW, uint8_t CW,uint16_t light);
 
@@ -69,5 +73,9 @@ int light_reset(uint16_t light, uint8_t cw);
 
 int light_power_on(void);
 void update_light_state(void);
+
+#if defined __cplusplus
+    }
+#endif
 
 #endif
