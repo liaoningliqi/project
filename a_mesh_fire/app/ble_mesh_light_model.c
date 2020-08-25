@@ -27,10 +27,6 @@
 #define HIGH_LEVEL_WORK      (0)
 #define LIGHT_TEMP_CIRCUIT   (1)
 
-#define LED_R  PWM_R
-#define LED_G  PWM_G
-#define LED_B  PWM_B
-
 #define PERA_THRESHOLD 0x100
 
 #define CUST_CONF_FLASH_INDEX (9)
@@ -59,7 +55,7 @@ static struct cached_data_t cust_mem;
 
 static volatile bool breath_mode_is_run = BT_PRIVT_FALSE;
 
-static uint32_t pwm_value_update(uint8_t VAL, uint8_t PIN)
+static uint32_t ble_mesh_light_model_pwm_value_update(uint8_t VAL, uint8_t PIN)
 {
     uint32_t VAL2;
     uint32_t period = PERA_THRESHOLD;
@@ -84,7 +80,7 @@ static uint32_t pwm_value_update(uint8_t VAL, uint8_t PIN)
      }
 }
 
-static int light_reset(uint16_t light, uint8_t cw)
+static int ble_mesh_light_model_light_reset(uint16_t light, uint8_t cw)
 {
     uint32_t re = light * 100;
     uint32_t mulrat = 0;
@@ -102,12 +98,12 @@ static int light_reset(uint16_t light, uint8_t cw)
             }
         }
     }
-    val = pwm_value_update(mulrat, PIN_SDI);
+    val = ble_mesh_light_model_pwm_value_update(mulrat, PIN_SDI);
     set_led_color(val, val, val);
     return 0;
 }
 
-static void light_default_var_init(void)
+static void ble_mesh_light_model_default_var_init(void)
 {
     gen_def_trans_time_srv_user_data.tt = 0x00;
 
@@ -125,10 +121,10 @@ static void light_default_var_init(void)
     light_ctl_srv_user_data.lightness_temp_last = (uint32_t)LIGHTNESS_MAX << 16 | TEMP_MIN;
 }
 
-static void light_default_status_init(void)
+static void ble_mesh_light_model_default_status_init(void)
 {
     uint32_t t1 = ((gen_level_state + 32768));
-    uint32_t t2 = (MIN_TEMP +  DIS_TEMP * (100 - GCW) / 100);
+    uint32_t t2 = (MIN_TEMP + DIS_TEMP * (100 - GCW) / 100);
 
     last_lightness = t1;
     light_ctl_srv_user_data.lightness_temp_def = light_ctl_srv_user_data.lightness_temp_last = (t1 << 16) | t2;
@@ -183,7 +179,7 @@ static void light_default_status_init(void)
     default_tt = gen_def_trans_time_srv_user_data.tt;
 }
 
-static int model_breath_mode()
+static int ble_mesh_light_model_breath_mode()
 {
     uint8_t cw = 0;
     uint16_t light = 0;
@@ -214,7 +210,7 @@ static int model_breath_mode()
                 cw = GCW;
             }
         }
-        light_reset(light, cw);
+        ble_mesh_light_model_light_reset(light, cw);
         for (count_m = 0; count_m < 1500; count_m++) {
         }
     }
@@ -232,36 +228,36 @@ static int model_breath_mode()
                 cw = GCW;
             }
         }
-        light_reset(light, cw);
+        ble_mesh_light_model_light_reset(light, cw);
         for(count_m = 0; count_m < 1500; count_m++) {
         }
     }
     return 0;
 }
 
-static void breath_mode_expire(struct ble_npl_event *work)
+static void ble_mesh_light_model_breath_mode_expire(struct ble_npl_event *work)
 {
     breath_mode_is_run = BT_PRIVT_FALSE;
     dbg_printf("stop breath mode\n");
     return;
 }
 
-static bool is_breath_run()
+static bool ble_mesh_light_model_is_breath_run()
 {
     return breath_mode_is_run;
 }
 
-static void breath_mode_work(struct ble_npl_event *work)
+static void ble_mesh_light_model_breath_mode_work(struct ble_npl_event *work)
 {
-    if (is_breath_run()) {
+    if (ble_mesh_light_model_is_breath_run()) {
         k_delayed_work_submit(&breath_work, 2000);
-        model_breath_mode();
+        ble_mesh_light_model_breath_mode();
     } else {
         dbg_printf("unbind mode finish\n");
     }
 }
 
-static void light_to_save(struct ble_npl_event *ev)
+static void ble_mesh_light_model_light_to_save(struct ble_npl_event *ev)
 {
     dbg_printf("flash write light param\n");
     kv_put(CUST_CONF_FLASH_INDEX, (uint8_t*)&cust_mem, sizeof(cust_mem));
@@ -269,18 +265,18 @@ static void light_to_save(struct ble_npl_event *ev)
 
 int ble_mesh_light_model_conf_init()
 {
-    light_default_var_init();
+    ble_mesh_light_model_default_var_init();
     transition_timers_init();
-    light_default_status_init();
+    ble_mesh_light_model_default_status_init();
 
-    k_delayed_work_init(&flash_work, light_to_save);
+    k_delayed_work_init(&flash_work, ble_mesh_light_model_light_to_save);
     return 0;
 }
 
 int ble_mesh_light_model_unbind_mode_run(uint32_t duration)
 {
-    k_delayed_work_init(&breath_mode, breath_mode_expire);
-    k_delayed_work_init(&breath_work, breath_mode_work);
+    k_delayed_work_init(&breath_mode, ble_mesh_light_model_breath_mode_expire);
+    k_delayed_work_init(&breath_work, ble_mesh_light_model_breath_mode_work);
     k_delayed_work_submit(&breath_mode, duration);
     k_delayed_work_submit(&breath_work, 2000);
     breath_mode_is_run = BT_PRIVT_TRUE;
@@ -291,7 +287,7 @@ int ble_mesh_light_model_unbind_mode_run(uint32_t duration)
 
 int ble_mesh_light_model_provsioned_complete()
 {
-    if (is_breath_run()) {
+    if (ble_mesh_light_model_is_breath_run()) {
         breath_mode_is_run = BT_PRIVT_FALSE;
         k_delayed_work_cancel(&breath_mode);
         dbg_printf("breath mode stopped\n");
@@ -302,11 +298,12 @@ int ble_mesh_light_model_provsioned_complete()
 int ble_mesh_light_model_power_on()
 {
     uint32_t lightstatus = 0;
-
-    g_ble_mesh_light_model_onoff_state = 1;
     uint32_t count_m;
     uint32_t count_n;
     uint8_t cw=0;
+
+    g_ble_mesh_light_model_onoff_state = 1;
+
 #if (FLASH_ENABLE)
     struct cached_data_t ctword={0};
     int16_t len;
@@ -314,8 +311,8 @@ int ble_mesh_light_model_power_on()
     uint16_t pack_cw = 5;
 
     db = kv_get(CUST_CONF_FLASH_INDEX, &len);
-    if (db && (len >0)) {
-        memcpy(&ctword,(uint8_t*)db,sizeof(cust_mem));
+    if (db && (len > 0)) {
+        memcpy(&ctword, (uint8_t*)db, sizeof(cust_mem));
     }
     memcpy(&lightstatus, &ctword, 4);
 
@@ -328,9 +325,9 @@ int ble_mesh_light_model_power_on()
         if (pack_t == 0) {
             pack_t = 1;
         }
-        for(count_n=0;count_n<2000;count_n++) {
+        for(count_n = 0; count_n < 2000; count_n++) {
             cw = pack_cw * count_n / 200;
-            light_reset(65535, cw);
+            ble_mesh_light_model_light_reset(65535, cw);
             for(count_m = 0; count_m < 7062; count_m++) {
             }
         }
@@ -369,7 +366,7 @@ void update_light_state(void)
         g_ble_mesh_light_model_onoff_state = 0;
     }
 
-    dbg_printf("Light state: onoff=%d lightness=0x%04x CW= 0x%x\n", g_ble_mesh_light_model_onoff_state, (u16_t)power, GCW);
+    dbg_printf("Light state: onoff = %d lightness = 0x%04x CW = 0x%x\n", g_ble_mesh_light_model_onoff_state, (u16_t)power, GCW);
     if (1 == g_ble_mesh_light_model_onoff_state) {
         ratio = (uint32_t)(lightness * 100) >> 16;
         set_lightness = ((uint32_t)(ratio << 8)) / 100;
@@ -379,7 +376,7 @@ void update_light_state(void)
         GIO_SetDirection(PIN_SDI, GIO_DIR_OUTPUT);
         GIO_WriteValue(PIN_SDI, 0);
         set_led_color(set_lightness, set_lightness, set_lightness);
-        if(last_lightness == lightness) {
+        if (last_lightness == lightness) {
             goto light_save;
         }
         return;

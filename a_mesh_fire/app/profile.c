@@ -43,9 +43,9 @@ static const uint8_t adv_data[] = {
     // Flags general discoverable
     0x02, 0x01, 0x06,
     //Tx Power
-    0x02, 0x0a,0x08,
+    0x02, 0x0a, 0x08,
     //32bits complete service UUIDs
-    0x08, 0x0b,'I','N','G','-','O','T','A',
+    0x08, 0x0b, 'I', 'N', 'G', '-', 'O', 'T', 'A',
 };
 
 #ifdef V2
@@ -60,9 +60,9 @@ static ota_ver_t this_version = {
 static unsigned char pub_addr[] = {6, 5, 4, 1, 1, 1};
 #endif
 
-static uint8_t addr2[8]={0x01,0x01,0x01,0x04,0x05,0x06};
+static uint8_t addr2[8] = {0x01, 0x01, 0x01, 0x04, 0x05, 0x06};
 static uint8_t att_db_storage[800];
-static uint8_t vnd_msg[4]={0xcf,0x09,0xF0,0x23};
+static uint8_t vnd_msg[4] = {0xcf, 0x09, 0xF0, 0x23};
 
 #ifdef USE_OOB
 static int output_number(bt_mesh_output_action_t action, u32_t number)
@@ -83,53 +83,50 @@ uint16_t att_read_callback(hci_con_handle_t connection_handle, uint16_t att_hand
     return ota_read_callback(att_handle, offset, buffer, buffer_size);
 }
 
-int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t transaction_mode,
-                              uint16_t offset,const uint8_t *buffer, uint16_t buffer_size)
+int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset,const uint8_t *buffer, uint16_t buffer_size)
 {
     return ota_write_callback(att_handle, transaction_mode, offset, (uint8_t*)buffer, buffer_size);
 }
 
 static void user_msg_handler(uint32_t msg_id, void *data, uint16_t size)
 {
-    uint8_t  key_status = 0;
+    uint8_t key_status = 0;
+    uint8_t msg[3] = {0x00, 0x00, 0x00};
+    app_request_t pmsg = {0};
+
     switch (msg_id) {
         case USER_MSG_ID_REQUEST_SEND_KB1:
-            if(service_is_ready(0)) {
-                extern struct bt_mesh_model root_models[];
-                uint8_t msg[3]={0x00,0x00,0x00};
-                app_request_t pmsg ={0};
+            if (service_is_ready(0)) {
                 pmsg.model = get_model_by_id(BT_MESH_MODEL_ID_GEN_ONOFF_SRV);
-                if(!pmsg.model) {
+                if (!pmsg.model) {
                     dbg_printf("model not exist\n");
                     return;
                 }
                 pmsg.app_idx = 0;
                 pmsg.dst = 0x015e;
                 pmsg.opcode = BT_MESH_MODEL_OP_2(0x82, 0x04);
-                if(1 == g_ble_mesh_light_model_onoff_state) {
-                    key_status=0;
-                    g_ble_mesh_light_model_onoff_state=0;
-                    set_led_color(0,0,0);
+                if (1 == g_ble_mesh_light_model_onoff_state) {
+                    key_status = 0;
+                    g_ble_mesh_light_model_onoff_state = 0;
+                    set_led_color(0, 0, 0);
                 } else {
-                    g_ble_mesh_light_model_onoff_state=1;
-                    key_status=1;
-                    set_led_color(50,50,50);
+                    g_ble_mesh_light_model_onoff_state = 1;
+                    key_status = 1;
+                    set_led_color(50, 50, 50);
                 }
-                memset(msg,key_status,sizeof(msg));
-                memcpy(pmsg.msg,msg,3);
-                pmsg.len =3;
-                pmsg.bear =1;
-                mesh_service_trigger((uint8_t*)&pmsg,sizeof(app_request_t));
+                memset(msg, key_status, sizeof(msg));
+                memcpy(pmsg.msg, msg, 3);
+                pmsg.len = 3;
+                pmsg.bear = 1;
+                mesh_service_trigger((uint8_t*)&pmsg, sizeof(app_request_t));
                 dbg_printf("mesh service trigger 0x8204 light status !!\r\n");
             }
             break;
 
         case USER_MSG_ID_REQUEST_SEND_KB2:
             if(service_is_ready(0)) {
-                extern struct bt_mesh_model vnd_models[];
-                app_request_t pmsg ={0};
                 pmsg.model = get_model_by_id(0x01A8);
-                if(!pmsg.model) {
+                if (!pmsg.model) {
                     dbg_printf("model not exist\n");
                     return;
                 }
@@ -137,10 +134,10 @@ static void user_msg_handler(uint32_t msg_id, void *data, uint16_t size)
                 pmsg.dst = 0xF000;
                 pmsg.opcode = BT_MESH_MODEL_OP_3(0xD4, 0x01A8);
                 vnd_msg[0]++;
-                memcpy(pmsg.msg,vnd_msg,4);
-                pmsg.len  =4;
-                pmsg.bear =1;
-                mesh_service_trigger((uint8_t*)&pmsg,sizeof(app_request_t));
+                memcpy(pmsg.msg, vnd_msg, 4);
+                pmsg.len = 4;
+                pmsg.bear = 1;
+                mesh_service_trigger((uint8_t*)&pmsg, sizeof(app_request_t));
                 dbg_printf("mesh service trigger Hardrest event 0x23!!\r\n");
             }
             break;
@@ -159,6 +156,8 @@ void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *p
     const btstack_user_msg_t *p_user_msg;
     uint8_t addr[] = {6, 5, 4, 0, 0, 0};
     ext_adv_set_en_t adv_set;
+    uint8_t msg[2] = {0x01, 0x02};
+    app_request_t pmsg = {0};
 
     if (packet_type != HCI_EVENT_PACKET) {
         return;
@@ -195,12 +194,10 @@ void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *p
             gap_set_ext_scan_response_data(OTA_ADV_HANDLE, sizeof(adv_data), (uint8_t*)adv_data);
             adv_set.handle = OTA_ADV_HANDLE;
             adv_set.duration = 0;
-            adv_set.max_events=0;
+            adv_set.max_events = 0;
             gap_set_ext_adv_enable(1, 1, &adv_set);
 
-            if(service_is_ready(0)) {
-                uint8_t msg[2] = {0x01,0x02};
-                app_request_t pmsg = {0};
+            if (service_is_ready(0)) {
                 pmsg.model = &vnd_models[0];
                 pmsg.app_idx = 0;
                 pmsg.dst = 0x00da;
@@ -220,8 +217,8 @@ void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *p
                 case HCI_SUBEVENT_LE_ADVERTISING_SET_TERMINATED:
                     if ((OTA_ADV_HANDLE == packet[4]) && (temp_OTA_CONN_HANDLE != INVALID_HANDLE)) {
                         OTA_CONN_HANDLE = temp_OTA_CONN_HANDLE;
-                        att_set_db(OTA_CONN_HANDLE,att_db_storage);
-                        att_server_init(att_read_callback,att_write_callback);
+                        att_set_db(OTA_CONN_HANDLE, att_db_storage);
+                        att_server_init(att_read_callback, att_write_callback);
                         dbg_printf("OTA_SERVICE connected\n");
                     }
                     break;
@@ -234,9 +231,9 @@ void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *p
             if(OTA_CONN_HANDLE == little_endian_read_16(packet, 3)) {
                 ext_adv_set_en_t advset;
                 advset.handle = OTA_ADV_HANDLE;
-                advset.duration =0;
-                advset.max_events =0;
-                gap_set_ext_adv_enable(1,1,&advset);
+                advset.duration = 0;
+                advset.max_events = 0;
+                gap_set_ext_adv_enable(1, 1, &advset);
             }
             break;
 
