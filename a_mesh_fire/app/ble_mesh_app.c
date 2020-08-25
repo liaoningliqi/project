@@ -82,7 +82,7 @@ static void prov_complete(u16_t net_idx, u16_t addr)
     dbg_printf("provisioning complete for net_idx 0x%04x addr 0x%04x", net_idx, addr);
     primary_addr = addr;
     primary_net_idx = net_idx;
-    light_provsioned_complete();
+    ble_mesh_light_model_provsioned_complete();
     set_mesh_sleep_duration(150);
     set_flag_for_adv_sent(0);
 

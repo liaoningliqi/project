@@ -11,7 +11,6 @@
 #endif
 
 #define FAST_POWER_ON_FLASH_INDEX  (10)
-#define CUST_CONF_FLASH_INDEX (9)
 
 #define INGCHIPS_COMP_ID           (0x06AC)
 #define ALIbaba_COMP_ID            (0x01A8)

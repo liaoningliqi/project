@@ -171,7 +171,7 @@ void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *p
             }
 
             if(!is_provisioned_poweron()) {
-                unbind_light_mode_run(BREATH_MODE_DURATION); //	breath mode once not provisoned.
+                ble_mesh_light_model_unbind_mode_run(BREATH_MODE_DURATION); //	breath mode once not provisoned.
                 set_flag_for_adv_sent(0);
                 set_mesh_sleep_duration(80);
             }

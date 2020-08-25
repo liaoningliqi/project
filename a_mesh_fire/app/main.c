@@ -50,7 +50,7 @@ int app_main()
 
     fast_switch_monitor_init();
 
-    light_power_on();
+    ble_mesh_light_model_power_on();
 
     platform_set_evt_callback(PLATFORM_CB_EVT_PROFILE_INIT, setup_profile, NULL);
 
