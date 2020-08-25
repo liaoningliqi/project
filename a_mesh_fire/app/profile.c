@@ -32,7 +32,7 @@
 #define OTA_ADV_HANDLE (0x05) // Attention: must not use the handle > 5
 #define BREATH_MODE_DURATION  10000
 
-static uint8_t mesh_bt_dev_name[8] = {'I','n','g','c','h','i','p','\0'};
+static uint8_t mesh_bt_dev_name[8] = {'I', 'n', 'g', '_', 'a', '\0'};
 
 static uint16_t OTA_CONN_HANDLE = INVALID_HANDLE;
 static uint16_t temp_OTA_CONN_HANDLE = INVALID_HANDLE;

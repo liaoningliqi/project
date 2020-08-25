@@ -17,6 +17,8 @@
 #include "peripheral_pinctrl.h"
 #include "peripheral_sysctrl.h"
 
+#include "../../project_common/project_common.h"
+
 #if defined __cplusplus
     extern "C" {
 #endif

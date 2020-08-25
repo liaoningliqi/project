@@ -61,7 +61,7 @@ static volatile bool breath_mode_is_run = BT_PRIVT_FALSE;
 void light2save(struct ble_npl_event *ev)
 {
     dbg_printf("flash write light param\n");
-    kv_put(CUST_CONF_FLASH_INDEX,(uint8_t*)&cust_mem,sizeof(cust_mem));
+    kv_put(CUST_CONF_FLASH_INDEX, (uint8_t*)&cust_mem, sizeof(cust_mem));
 }
 
 void update_light_state(void)
@@ -73,18 +73,18 @@ void update_light_state(void)
     uint8_t set_lightness = 0;
     color = 100 * ((float)(temperature + 32768) / 65535);
     GWW = color;
-    GCW = 100-color;
+    GCW = 100 - color;
 
-    if (power>0) {
+    if (power > 0) {
         g_ble_mesh_light_model_onoff_state = 1;
     } else {
         g_ble_mesh_light_model_onoff_state = 0;
     }
 
-    dbg_printf("Light state: onoff=%d lightness=0x%04x CW= 0x%x\n", g_ble_mesh_light_model_onoff_state, (u16_t)power,GCW);
+    dbg_printf("Light state: onoff=%d lightness=0x%04x CW= 0x%x\n", g_ble_mesh_light_model_onoff_state, (u16_t)power, GCW);
     if (1 == g_ble_mesh_light_model_onoff_state) {
-        ratio = (uint32_t)(lightness *100) >> 16;
-        set_lightness =  ((uint32_t)(ratio << 8)) / 100;
+        ratio = (uint32_t)(lightness * 100) >> 16;
+        set_lightness = ((uint32_t)(ratio << 8)) / 100;
         Rv = set_lightness;
         Gv = set_lightness;
         Bv = set_lightness;

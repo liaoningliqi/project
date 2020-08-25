@@ -48,18 +48,12 @@
 
 #define PB_GATT_MAC_ADDR ((uint8_t[6]){0x38,0xd2,0xca,0x16,0xe0,0x010})
 
-#define MYNEWT_VAL_BLE_MESH_DEV_UUID ((uint8_t[16]){0xA8,0x01,0x61,0x00,0x04,0x20,0x30,0x75,0x9a,0x00,0x07,0xda,0x78,0x00,0x00,0x00})
-
 static uint32_t BLE_MESH_DEV_PRODUCT_ID = 5349350;
 static uint8_t param[32];
 
-#ifdef PTS_TEST
-static u8_t dev_uuid[16] = {0x02,0x0B,0xDC,0x08,0x10,0x21,0x0B,0x0E,0x0A,0x0C,0x00,0x0B,0x0E,0x0A,0x0B,0x96};
-const static unsigned char addr[6] = {2,0,0,0,0,0};
-#else
+#define MYNEWT_VAL_BLE_MESH_DEV_UUID ((uint8_t[16]){0xA8,0x01,0x61,0x00,0x04,0x20,0x30,0x75,0x9a,0x00,0x07,0xda,0x78,0x00,0x00,0x00})
 static u8_t dev_uuid[16] = MYNEWT_VAL(BLE_MESH_DEV_UUID);
 const static unsigned char addr[6] = {1,0,0,0,0,0};
-#endif
 
 static void prov_complete(u16_t net_idx, u16_t addr);
 static void prov_reset(void);
@@ -111,8 +105,8 @@ static void prov_reset(void)
 void mesh_platform_setup()
 {
     memcpy(param, &BLE_MESH_DEV_PRODUCT_ID, sizeof(uint32_t));
-    memcpy(param+4, &TM_AUTHEN_VAL_LEN, sizeof(uint32_t));
-    memcpy(param+8, SEC, 16);
+    memcpy(param + 4, &TM_AUTHEN_VAL_LEN, sizeof(uint32_t));
+    memcpy(param + 8, SEC, 16);
     mesh_platform_config(1, PB_ADV_ADDR, param);
     mesh_platform_config(2, PB_GATT_MAC_ADDR, NULL);
 }
