@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\free_rtos_transp;..\start_up\ing918;..\..\..\src\FWlib;..\..\..\open_source\FreeRTOS\Source\include;..\..\..\open_source\FreeRTOS\Source\portable\RVDS\ARM_CM3;..\app;..\btstack_transp</IncludePath>
+              <IncludePath>..\free_rtos_transp;..\..\..\src\StartUP;..\..\..\src\FWlib;..\..\..\open_source\FreeRTOS\Source\include;..\..\..\open_source\FreeRTOS\Source\portable\RVDS\ARM_CM3;..\app;..\btstack_transp_ing9188</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -487,7 +487,7 @@
             <File>
               <FileName>btstack_transp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\btstack_transp\btstack_transp.c</FilePath>
+              <FilePath>..\btstack_transp_ing9188\btstack_transp.c</FilePath>
             </File>
           </Files>
         </Group>

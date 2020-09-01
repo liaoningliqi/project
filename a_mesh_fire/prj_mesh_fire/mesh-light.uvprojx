@@ -335,7 +335,7 @@
               <MiscControls>--gnu</MiscControls>
               <Define>USE_STDPERIPH_DRIVER,OTA_ENABLE=1,FLASH_ENABLE=1,HCI_ACL_PAYLOAD_SIZE=120,BOARD_V2</Define>
               <Undefine></Undefine>
-              <IncludePath>..\app;..\..\project_common;..\..\..\bundles\typical\inc;..\..\..\bundles\typical\inc\os;..\..\..\bundles\typical\inc\os\portable\RVDS\ARM_CM3;..\..\..\src\BSP;..\..\..\src\FWlib;..\..\..\src\StartUP;..\..\..\src\Tools;..\..\..\src\Mesh</IncludePath>
+              <IncludePath>..\app;..\..\project_common;..\..\..\bundles\typical\inc;..\..\..\bundles\typical\inc\os;..\..\..\bundles\typical\inc\os\portable\RVDS\ARM_CM3;..\..\..\src\BSP;..\..\..\src\FWlib;..\..\..\src\StartUP;..\..\..\src\Tools;..\..\..\src\Mesh;..\..\..\src\Mesh\os</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -522,7 +522,7 @@
             <File>
               <FileName>Mesh.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>..\..\..\src\Mesh\Mesh.lib</FilePath>
+              <FilePath>..\..\..\bundles\mesh\Mesh.lib</FilePath>
             </File>
           </Files>
         </Group>

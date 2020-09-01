@@ -1,0 +1,13 @@
+.\output\bt_cmd_parse.o: ..\..\project_common\bt_cmd_parse.c
+.\output\bt_cmd_parse.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\output\bt_cmd_parse.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\output\bt_cmd_parse.o: ..\..\..\bundles\mesh\inc\btstack_event.h
+.\output\bt_cmd_parse.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\output\bt_cmd_parse.o: ..\..\..\bundles\mesh\inc\bluetooth.h
+.\output\bt_cmd_parse.o: ..\..\..\bundles\mesh\inc\compiler.h
+.\output\bt_cmd_parse.o: ..\..\..\bundles\mesh\inc\btstack_util.h
+.\output\bt_cmd_parse.o: ..\..\..\bundles\mesh\inc\gap.h
+.\output\bt_cmd_parse.o: ..\..\..\bundles\mesh\inc\bt_types.h
+.\output\bt_cmd_parse.o: ..\..\..\bundles\mesh\inc\btstack_linked_list.h
+.\output\bt_cmd_parse.o: ..\..\project_common\project_common.h
+.\output\bt_cmd_parse.o: ..\..\project_common\bt_cmd_parse.h

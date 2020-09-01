@@ -176,7 +176,7 @@ void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *p
             }
             gap_set_random_device_address(addr);
             gap_set_adv_set_random_addr(OTA_ADV_HANDLE, addr2);
-            gap_set_ext_adv_para(OTA_ADV_HANDLE,                            // ota use ADV_SET 5
+            gap_set_ext_adv_para(OTA_ADV_HANDLE,            // ota use ADV_SET 5
                                  CONNECTABLE_ADV_BIT | SCANNABLE_ADV_BIT | LEGACY_PDU_BIT,
                                  0x00f1, 0x00f1,            // Primary_Advertising_Interval_Min, Primary_Advertising_Interval_Max
                                  PRIMARY_ADV_ALL_CHANNELS,  // Primary_Advertising_Channel_Map
@@ -271,6 +271,7 @@ int flash_erase_and_write(uint8_t *flash_area, uint32_t off, uint32_t *src, uint
 uint32_t setup_profile(void *data, void *user_data)
 {
     dbg_printf("setup profile\r\n");
+    mesh_env_init();
 
     init_service();
     att_server_init(att_read_callback, att_write_callback);
@@ -278,7 +279,6 @@ uint32_t setup_profile(void *data, void *user_data)
     hci_add_event_handler(&hci_event_callback_registration);
     att_server_register_packet_handler(&user_packet_handler);
 
-    mesh_env_init();
     mesh_set_dev_name((char*)mesh_bt_dev_name);
     create_mesh_task();
 

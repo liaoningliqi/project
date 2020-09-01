@@ -47,8 +47,8 @@
             <NotGenerated>0</NotGenerated>
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
-          <OutputDirectory>..\</OutputDirectory>
-          <OutputName>uart_console.hex</OutputName>
+          <OutputDirectory>..\..\ing9188_gnu_bare\build\</OutputDirectory>
+          <OutputName>example_main.hex</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>

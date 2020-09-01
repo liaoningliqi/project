@@ -1,0 +1,325 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.21.1.0
+Copyright (C) 2016 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: li RD7, ingchips, LIC=MPPMM-XAIKW-RADDM-XPJN9-MR379-U0XG5
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.21a
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 3 (build 300)
+Assembler:       Armasm.exe V5.06 update 3 (build 300)
+Linker/Locator:  ArmLink.exe V5.06 update 3 (build 300)
+Library Manager: ArmAr.exe V5.06 update 3 (build 300)
+Hex Converter:   FromElf.exe V5.06 update 3 (build 300)
+CPU DLL:         SARMCM3.DLL V5.21a
+Dialog DLL:      DCM.DLL V1.13.8.0
+Target DLL:      Segger\JL2CM3.dll V2.99.23.0
+Dialog DLL:      TCM.DLL V1.14.14.0
+ 
+<h2>Project:</h2>
+C:\lq\e_mint_server\a_git\project\b_code\project\a_mesh_pre\prj_mesh_fire\mesh.uvprojx
+Project File Date:  08/27/2020
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 3 (build 300)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Rebuild target 'Target 1'
+compiling main.c...
+..\..\..\bundles\mesh\inc\glue.h(79): error:  #256: invalid redeclaration of type name "ble_addr_t2" (declared at line 132 of "..\..\..\src\Mesh\mesh_def.h")
+  } ble_addr_t2;
+..\..\..\bundles\mesh\inc\glue.h(147): error:  #101: "ble_gap_ext_disc_desc" has already been declared in the current scope
+  struct ble_gap_ext_disc_desc {
+..\..\..\bundles\mesh\inc\glue.h(196): error:  #101: "ble_gap_sec_state" has already been declared in the current scope
+  struct ble_gap_sec_state {
+..\..\..\bundles\mesh\inc\glue.h(210): error:  #101: "ble_gap_disc_desc" has already been declared in the current scope
+  struct ble_gap_disc_desc {
+..\..\..\bundles\mesh\inc\glue.h(226): error:  #101: "ble_gap_conn_desc" has already been declared in the current scope
+  struct ble_gap_conn_desc {
+..\..\..\bundles\mesh\inc\glue.h(257): error:  #101: "ble_gap_event" has already been declared in the current scope
+  struct ble_gap_event
+..\..\..\bundles\mesh\inc\glue.h(618): error:  #247: function "NET_BUF_SIMPLE" has already been defined
+  static inline struct os_mbuf * NET_BUF_SIMPLE(uint16_t size)
+..\..\..\bundles\mesh\inc\glue.h(716): error:  #101: "k_delayed_work" has already been declared in the current scope
+  struct k_delayed_work {
+..\..\..\bundles\mesh\inc\glue.h(721): error:  #147-D: declaration is incompatible with "void k_delayed_work_init(struct k_delayed_work *, ble_npl_event_fn *)" (declared at line 1075 of "..\..\..\src\Mesh\mesh_def.h")
+  void k_delayed_work_init(struct k_delayed_work *w, ble_npl_event_fn *f);
+..\..\..\bundles\mesh\inc\glue.h(722): error:  #147-D: declaration is incompatible with "void k_delayed_work_cancel(struct k_delayed_work *)" (declared at line 1086 of "..\..\..\src\Mesh\mesh_def.h")
+  void k_delayed_work_cancel(struct k_delayed_work *w);
+..\..\..\bundles\mesh\inc\glue.h(723): error:  #147-D: declaration is incompatible with "void k_delayed_work_submit(struct k_delayed_work *, uint32_t)" (declared at line 1099 of "..\..\..\src\Mesh\mesh_def.h")
+  void k_delayed_work_submit(struct k_delayed_work *w, uint32_t ms);
+..\..\..\bundles\mesh\inc\glue.h(729): error:  #147-D: declaration is incompatible with "void k_delayed_work_add_arg(struct k_delayed_work *, void *)" (declared at line 1166 of "..\..\..\src\Mesh\mesh_def.h")
+  void k_delayed_work_add_arg(struct k_delayed_work *w, void *arg);
+..\..\..\bundles\mesh\inc\glue.h(730): error:  #147-D: declaration is incompatible with "uint32_t k_delayed_work_remaining_get(struct k_delayed_work *)" (declared at line 1177 of "..\..\..\src\Mesh\mesh_def.h")
+  uint32_t k_delayed_work_remaining_get(struct k_delayed_work *w);
+..\..\..\bundles\mesh\inc\glue.h(818): error:  #247: function "k_sem_init" has already been defined
+  static inline void k_sem_init(struct k_sem *sem, unsigned int initial_count,
+..\..\..\bundles\mesh\inc\glue.h(824): error:  #247: function "k_sem_take" has already been defined
+  static inline int k_sem_take(struct k_sem *sem, s32_t timeout)
+..\..\..\bundles\mesh\inc\glue.h(833): error:  #247: function "k_sem_give" has already been defined
+  static inline void k_sem_give(struct k_sem *sem)
+..\..\..\bundles\mesh\inc\glue.h(895): error:  #256: invalid redeclaration of type name "mesh_gap_event" (declared at line 412 of "..\..\..\src\Mesh\mesh_def.h")
+  typedef  struct ble_gap_event  mesh_gap_event;
+..\..\..\bundles\mesh\inc\glue.h(908): error:  #101: "ccm_data" has already been declared in the current scope
+  typedef struct ccm_data
+..\..\..\bundles\mesh\inc\glue.h(920): error:  #256: invalid redeclaration of type name "ccm_data_t" (declared at line 69 of "..\..\..\src\Mesh\mesh_def.h")
+  }ccm_data_t;
+..\..\..\bundles\mesh\inc\glue.h(992): error:  #101: "app_request" has already been declared in the current scope
+  typedef struct app_request
+..\..\..\bundles\mesh\inc\glue.h(1001): error:  #256: invalid redeclaration of type name "app_request_t" (declared at line 1334 of "..\..\..\src\Mesh\mesh_def.h")
+  }app_request_t;
+..\..\..\bundles\mesh\inc\glue.h(1003): error:  #2571: invalid redefinition of enum "trace_info" (declared at line 1347 of "..\..\..\src\Mesh\mesh_def.h")
+  typedef enum trace_info{   
+..\..\..\bundles\mesh\inc\glue.h(1004): error:  #101: "ADV_LAYER" has already been declared in the current scope
+      ADV_LAYER   = 
+IT(0),
+..\..\..\bundles\mesh\inc\glue.h(1005): error:  #101: "NET_LAYER" has already been declared in the current scope
+      NET_LAYER   = 
+IT(1),
+..\..\..\bundles\mesh\inc\glue.h(1006): error:  #101: "TRANS_LAYER" has already been declared in the current scope
+      TRANS_LAYER = 
+IT(2),
+..\..\..\bundles\mesh\inc\glue.h(1007): error:  #101: "ACC_LAYER" has already been declared in the current scope
+      ACC_LAYER   = 
+IT(3),
+..\..\..\bundles\mesh\inc\glue.h(1008): error:  #101: "BEA_FEA" has already been declared in the current scope
+      BEA_FEA     = 
+IT(4),
+..\..\..\bundles\mesh\inc\glue.h(1009): error:  #101: "FRND_FEA" has already been declared in the current scope
+      FRND_FEA    = 
+IT(5),
+..\..\..\bundles\mesh\inc\glue.h(1010): error:  #101: "LPN_FEA" has already been declared in the current scope
+      LPN_FEA     = 
+IT(6),
+..\..\..\bundles\mesh\inc\glue.h(1011): error:  #101: "MESH_FEA" has already been declared in the current scope
+      MESH_FEA    = 
+IT(7),
+..\app\main.c: 0 warnings, 30 errors
+compiling profile.c...
+..\..\..\bundles\mesh\inc\glue.h(79): error:  #256: invalid redeclaration of type name "ble_addr_t2" (declared at line 132 of "..\..\..\src\Mesh\mesh_def.h")
+  } ble_addr_t2;
+..\..\..\bundles\mesh\inc\glue.h(147): error:  #101: "ble_gap_ext_disc_desc" has already been declared in the current scope
+  struct ble_gap_ext_disc_desc {
+..\..\..\bundles\mesh\inc\glue.h(196): error:  #101: "ble_gap_sec_state" has already been declared in the current scope
+  struct ble_gap_sec_state {
+..\..\..\bundles\mesh\inc\glue.h(210): error:  #101: "ble_gap_disc_desc" has already been declared in the current scope
+  struct ble_gap_disc_desc {
+..\..\..\bundles\mesh\inc\glue.h(226): error:  #101: "ble_gap_conn_desc" has already been declared in the current scope
+  struct ble_gap_conn_desc {
+..\..\..\bundles\mesh\inc\glue.h(257): error:  #101: "ble_gap_event" has already been declared in the current scope
+  struct ble_gap_event
+..\..\..\bundles\mesh\inc\glue.h(618): error:  #247: function "NET_BUF_SIMPLE" has already been defined
+  static inline struct os_mbuf * NET_BUF_SIMPLE(uint16_t size)
+..\..\..\bundles\mesh\inc\glue.h(716): error:  #101: "k_delayed_work" has already been declared in the current scope
+  struct k_delayed_work {
+..\..\..\bundles\mesh\inc\glue.h(721): error:  #147-D: declaration is incompatible with "void k_delayed_work_init(struct k_delayed_work *, ble_npl_event_fn *)" (declared at line 1075 of "..\..\..\src\Mesh\mesh_def.h")
+  void k_delayed_work_init(struct k_delayed_work *w, ble_npl_event_fn *f);
+..\..\..\bundles\mesh\inc\glue.h(722): error:  #147-D: declaration is incompatible with "void k_delayed_work_cancel(struct k_delayed_work *)" (declared at line 1086 of "..\..\..\src\Mesh\mesh_def.h")
+  void k_delayed_work_cancel(struct k_delayed_work *w);
+..\..\..\bundles\mesh\inc\glue.h(723): error:  #147-D: declaration is incompatible with "void k_delayed_work_submit(struct k_delayed_work *, uint32_t)" (declared at line 1099 of "..\..\..\src\Mesh\mesh_def.h")
+  void k_delayed_work_submit(struct k_delayed_work *w, uint32_t ms);
+..\..\..\bundles\mesh\inc\glue.h(729): error:  #147-D: declaration is incompatible with "void k_delayed_work_add_arg(struct k_delayed_work *, void *)" (declared at line 1166 of "..\..\..\src\Mesh\mesh_def.h")
+  void k_delayed_work_add_arg(struct k_delayed_work *w, void *arg);
+..\..\..\bundles\mesh\inc\glue.h(730): error:  #147-D: declaration is incompatible with "uint32_t k_delayed_work_remaining_get(struct k_delayed_work *)" (declared at line 1177 of "..\..\..\src\Mesh\mesh_def.h")
+  uint32_t k_delayed_work_remaining_get(struct k_delayed_work *w);
+..\..\..\bundles\mesh\inc\glue.h(818): error:  #247: function "k_sem_init" has already been defined
+  static inline void k_sem_init(struct k_sem *sem, unsigned int initial_count,
+..\..\..\bundles\mesh\inc\glue.h(824): error:  #247: function "k_sem_take" has already been defined
+  static inline int k_sem_take(struct k_sem *sem, s32_t timeout)
+..\..\..\bundles\mesh\inc\glue.h(833): error:  #247: function "k_sem_give" has already been defined
+  static inline void k_sem_give(struct k_sem *sem)
+..\..\..\bundles\mesh\inc\glue.h(895): error:  #256: invalid redeclaration of type name "mesh_gap_event" (declared at line 412 of "..\..\..\src\Mesh\mesh_def.h")
+  typedef  struct ble_gap_event  mesh_gap_event;
+..\..\..\bundles\mesh\inc\glue.h(908): error:  #101: "ccm_data" has already been declared in the current scope
+  typedef struct ccm_data
+..\..\..\bundles\mesh\inc\glue.h(920): error:  #256: invalid redeclaration of type name "ccm_data_t" (declared at line 69 of "..\..\..\src\Mesh\mesh_def.h")
+  }ccm_data_t;
+..\..\..\bundles\mesh\inc\glue.h(992): error:  #101: "app_request" has already been declared in the current scope
+  typedef struct app_request
+..\..\..\bundles\mesh\inc\glue.h(1001): error:  #256: invalid redeclaration of type name "app_request_t" (declared at line 1334 of "..\..\..\src\Mesh\mesh_def.h")
+  }app_request_t;
+..\..\..\bundles\mesh\inc\glue.h(1003): error:  #2571: invalid redefinition of enum "trace_info" (declared at line 1347 of "..\..\..\src\Mesh\mesh_def.h")
+  typedef enum trace_info{   
+..\..\..\bundles\mesh\inc\glue.h(1004): error:  #101: "ADV_LAYER" has already been declared in the current scope
+      ADV_LAYER   = 
+IT(0),
+..\..\..\bundles\mesh\inc\glue.h(1005): error:  #101: "NET_LAYER" has already been declared in the current scope
+      NET_LAYER   = 
+IT(1),
+..\..\..\bundles\mesh\inc\glue.h(1006): error:  #101: "TRANS_LAYER" has already been declared in the current scope
+      TRANS_LAYER = 
+IT(2),
+..\..\..\bundles\mesh\inc\glue.h(1007): error:  #101: "ACC_LAYER" has already been declared in the current scope
+      ACC_LAYER   = 
+IT(3),
+..\..\..\bundles\mesh\inc\glue.h(1008): error:  #101: "BEA_FEA" has already been declared in the current scope
+      BEA_FEA     = 
+IT(4),
+..\..\..\bundles\mesh\inc\glue.h(1009): error:  #101: "FRND_FEA" has already been declared in the current scope
+      FRND_FEA    = 
+IT(5),
+..\..\..\bundles\mesh\inc\glue.h(1010): error:  #101: "LPN_FEA" has already been declared in the current scope
+      LPN_FEA     = 
+IT(6),
+..\..\..\bundles\mesh\inc\glue.h(1011): error:  #101: "MESH_FEA" has already been declared in the current scope
+      MESH_FEA    = 
+IT(7),
+..\app\profile.c: 0 warnings, 30 errors
+compiling ble_mesh_light_model.c...
+compiling ble_mesh_flash_oper.c...
+compiling chip_peripherals.c...
+compiling ble_mesh_app.c...
+..\..\..\src\Mesh\mesh_def.h(57): error:  #101: "ccm_data" has already been declared in the current scope
+  typedef struct ccm_data
+..\..\..\src\Mesh\mesh_def.h(69): error:  #256: invalid redeclaration of type name "ccm_data_t" (declared at line 920 of "..\..\..\bundles\mesh\inc\glue.h")
+  }ccm_data_t;
+..\..\..\src\Mesh\mesh_def.h(132): error:  #256: invalid redeclaration of type name "ble_addr_t2" (declared at line 79 of "..\..\..\bundles\mesh\inc\glue.h")
+  } ble_addr_t2;
+..\..\..\src\Mesh\mesh_def.h(139): error:  #101: "ble_gap_ext_disc_desc" has already been declared in the current scope
+  struct ble_gap_ext_disc_desc {
+..\..\..\src\Mesh\mesh_def.h(164): error:  #101: "ble_gap_disc_desc" has already been declared in the current scope
+  struct ble_gap_disc_desc {
+..\..\..\src\Mesh\mesh_def.h(184): error:  #101: "ble_gap_sec_state" has already been declared in the current scope
+  struct ble_gap_sec_state {
+..\..\..\src\Mesh\mesh_def.h(202): error:  #101: "ble_gap_conn_desc" has already been declared in the current scope
+  struct ble_gap_conn_desc {
+..\..\..\src\Mesh\mesh_def.h(237): error:  #101: "ble_gap_event" has already been declared in the current scope
+  struct ble_gap_event
+..\..\..\src\Mesh\mesh_def.h(412): error:  #256: invalid redeclaration of type name "mesh_gap_event" (declared at line 895 of "..\..\..\bundles\mesh\inc\glue.h")
+  typedef  struct ble_gap_event  mesh_gap_event;
+..\..\..\src\Mesh\mesh_def.h(488): error:  #247: function "NET_BUF_SIMPLE" has already been defined
+  static inline struct os_mbuf * NET_BUF_SIMPLE(uint16_t size)
+..\..\..\src\Mesh\mesh_def.h(1045): error:  #101: "k_delayed_work" has already been declared in the current scope
+  struct k_delayed_work {
+..\..\..\src\Mesh\mesh_def.h(1075): error:  #147-D: declaration is incompatible with "void k_delayed_work_init(struct k_delayed_work *, ble_npl_event_fn *)" (declared at line 721 of "..\..\..\bundles\mesh\inc\glue.h")
+  void k_delayed_work_init(struct k_delayed_work *w, ble_npl_event_fn *f);
+..\..\..\src\Mesh\mesh_def.h(1086): error:  #147-D: declaration is incompatible with "void k_delayed_work_cancel(struct k_delayed_work *)" (declared at line 722 of "..\..\..\bundles\mesh\inc\glue.h")
+  void k_delayed_work_cancel(struct k_delayed_work *w);
+..\..\..\src\Mesh\mesh_def.h(1099): error:  #147-D: declaration is incompatible with "void k_delayed_work_submit(struct k_delayed_work *, uint32_t)" (declared at line 723 of "..\..\..\bundles\mesh\inc\glue.h")
+  void k_delayed_work_submit(struct k_delayed_work *w, uint32_t ms);
+..\..\..\src\Mesh\mesh_def.h(1166): error:  #147-D: declaration is incompatible with "void k_delayed_work_add_arg(struct k_delayed_work *, void *)" (declared at line 729 of "..\..\..\bundles\mesh\inc\glue.h")
+  void k_delayed_work_add_arg(struct k_delayed_work *w, void *arg);
+..\..\..\src\Mesh\mesh_def.h(1177): error:  #147-D: declaration is incompatible with "uint32_t k_delayed_work_remaining_get(struct k_delayed_work *)" (declared at line 730 of "..\..\..\bundles\mesh\inc\glue.h")
+  uint32_t k_delayed_work_remaining_get(struct k_delayed_work *w);
+..\..\..\src\Mesh\mesh_def.h(1325): error:  #101: "app_request" has already been declared in the current scope
+  typedef struct app_request
+..\..\..\src\Mesh\mesh_def.h(1334): error:  #256: invalid redeclaration of type name "app_request_t" (declared at line 1001 of "..\..\..\bundles\mesh\inc\glue.h")
+  }app_request_t;
+..\..\..\src\Mesh\mesh_def.h(1347): error:  #2571: invalid redefinition of enum "trace_info" (declared at line 1003 of "..\..\..\bundles\mesh\inc\glue.h")
+  typedef enum trace_info{   
+..\..\..\src\Mesh\mesh_def.h(1348): error:  #101: "ADV_LAYER" has already been declared in the current scope
+      ADV_LAYER   = 
+IT(0),    ///< bit set of advertise layer for trace
+..\..\..\src\Mesh\mesh_def.h(1349): error:  #101: "NET_LAYER" has already been declared in the current scope
+      NET_LAYER   = 
+IT(1),    ///< bit set of network layer for trace
+..\..\..\src\Mesh\mesh_def.h(1350): error:  #101: "TRANS_LAYER" has already been declared in the current scope
+      TRANS_LAYER = 
+IT(2),    ///< bit set of transport layer for trace
+..\..\..\src\Mesh\mesh_def.h(1351): error:  #101: "ACC_LAYER" has already been declared in the current scope
+      ACC_LAYER   = 
+IT(3),    ///< bit set of access layer for trace
+..\..\..\src\Mesh\mesh_def.h(1352): error:  #101: "BEA_FEA" has already been declared in the current scope
+      BEA_FEA     = 
+IT(4),    ///< bit set of beacon message for trace
+..\..\..\src\Mesh\mesh_def.h(1353): error:  #101: "FRND_FEA" has already been declared in the current scope
+      FRND_FEA    = 
+IT(5),    ///< bit set of friend message for trace 
+..\..\..\src\Mesh\mesh_def.h(1354): error:  #101: "LPN_FEA" has already been declared in the current scope
+      LPN_FEA     = 
+IT(6),    ///< bit set of low power exchange message for trace
+..\..\..\src\Mesh\mesh_def.h(1355): error:  #101: "MESH_FEA" has already been declared in the current scope
+      MESH_FEA    = 
+IT(7),    ///< bit set of mesh related message for trace
+..\..\..\src\Mesh\mesh_def.h(1356): error:  #101: "CRYPTO_FEA" has already been declared in the current scope
+      CRYPTO_FEA  = 
+IT(8),    ///< bit set of encryption or decryption message for trace
+..\..\..\src\Mesh\mesh_def.h(1357): error:  #101: "PROV_FEA" has already been declared in the current scope
+      PROV_FEA    = 
+IT(9),    ///< bit set of proving message for trace 
+..\..\..\src\Mesh\mesh_def.h(1358): error:  #101: "PROXY_FEA" has already been declared in the current scope
+      PROXY_FEA   = 
+IT(10),   ///< bit set of proxy message for trace
+..\app\ble_mesh_app.c: 0 warnings, 30 errors
+assembling startup_ing91800.s...
+compiling ble_mesh_composition.c...
+..\app\ble_mesh_composition.c(17): error:  #70: incomplete type is not allowed
+  struct bt_mesh_model vnd_models[] = {0};
+..\app\ble_mesh_composition.c(19): error:  #70: incomplete type is not allowed
+  static struct bt_mesh_cfg_srv cfg_srv = {
+..\app\ble_mesh_composition.c(20): error:  #20: identifier "BT_MESH_RELAY_ENABLED" is undefined
+  	.relay = BT_MESH_RELAY_ENABLED,
+..\app\ble_mesh_composition.c(21): error:  #20: identifier "BT_MESH_BEACON_ENABLED" is undefined
+  	.beacon = BT_MESH_BEACON_ENABLED,
+..\app\ble_mesh_composition.c(26): error:  #20: identifier "BT_MESH_FRIEND_NOT_SUPPORTED" is undefined
+  	.frnd = BT_MESH_FRIEND_NOT_SUPPORTED,
+..\app\ble_mesh_composition.c(32): error:  #20: identifier "BT_MESH_GATT_PROXY_NOT_SUPPORTED" is undefined
+  	.gatt_proxy = BT_MESH_GATT_PROXY_NOT_SUPPORTED,
+..\app\ble_mesh_composition.c(38): error:  #20: identifier "BT_MESH_TRANSMIT" is undefined
+  	.net_transmit = BT_MESH_TRANSMIT(2, 20),
+..\app\ble_mesh_composition.c(38): error:  #59: function call is not allowed in a constant expression
+  	.net_transmit = BT_MESH_TRANSMIT(2, 20),
+..\app\ble_mesh_composition.c(41): error:  #59: function call is not allowed in a constant expression
+  	.relay_retransmit = BT_MESH_TRANSMIT(3, 20),
+..\app\ble_mesh_composition.c(44): error:  #70: incomplete type is not allowed
+  static struct bt_mesh_cfg_cli cfg_cli = {
+..\app\ble_mesh_composition.c(47): error:  #70: incomplete type is not allowed
+  struct bt_mesh_model root_models[] = {
+..\app\ble_mesh_composition.c(48): error:  #20: identifier "BT_MESH_MODEL_CFG_SRV" is undefined
+  	BT_MESH_MODEL_CFG_SRV(&cfg_srv),
+..\app\ble_mesh_composition.c(48): error:  #59: function call is not allowed in a constant expression
+  	BT_MESH_MODEL_CFG_SRV(&cfg_srv),
+..\app\ble_mesh_composition.c(49): error:  #20: identifier "BT_MESH_MODEL_CFG_CLI" is undefined
+  	BT_MESH_MODEL_CFG_CLI(&cfg_cli),
+..\app\ble_mesh_composition.c(49): error:  #59: function call is not allowed in a constant expression
+  	BT_MESH_MODEL_CFG_CLI(&cfg_cli),
+..\app\ble_mesh_composition.c(53): error:  #65: expected a ";"
+  static struct bt_mesh_elem elements[] = {
+..\app\ble_mesh_composition.c(57): error:  #70: incomplete type is not allowed
+  static const struct bt_mesh_comp comp = {
+..\app\ble_mesh_composition.c(58): error:  #20: identifier "CID_RUNTIME" is undefined
+  	.cid = CID_RUNTIME,
+..\app\ble_mesh_composition.c(59): error:  #20: identifier "elements" is undefined
+  	.elem = elements,
+..\app\ble_mesh_composition.c(60): error:  #20: identifier "ARRAY_SIZE" is undefined
+  	.elem_count = ARRAY_SIZE(elements),
+..\app\ble_mesh_composition.c(60): error:  #59: function call is not allowed in a constant expression
+  	.elem_count = ARRAY_SIZE(elements),
+..\app\ble_mesh_composition.c: 0 warnings, 21 errors
+compiling eflash.c...
+compiling peripheral_gpio.c...
+compiling peripheral_pinctrl.c...
+compiling peripheral_pwm.c...
+compiling peripheral_sysctrl.c...
+compiling peripheral_timer.c...
+compiling peripheral_uart.c...
+compiling ota_service.c...
+compiling ad_parser.c...
+compiling att_db_util.c...
+compiling bt_cmd_parse.c...
+compiling bt_cmd_data_uart_io_adp.c...
+compiling mesh_srv.c...
+".\output\mesh.axf" - 111 Error(s), 0 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.4.5.0.pack
+                ARM::CMSIS:CORE:4.3.0
+                CMSIS (Cortex Microcontroller Software Interface Standard)
+   * Component: CORE Version: 4.3.0
+
+<h2>Collection of Component include folders:</h2>
+  C:\lq\e_mint_server\a_git\project\b_code\project\a_mesh_pre\prj_mesh_fire\RTE
+  C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:4.3.0
+Target not created.
+Build Time Elapsed:  00:00:03
+</pre>
+</body>
+</html>

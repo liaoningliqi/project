@@ -12,6 +12,7 @@
 
 #define DEBUG 1
 #define UART_PORT 0
+#define LOG_UART APB_UART0
 
 #ifndef DEBUG
     #warning DEBUG should be defined 0 or 1
