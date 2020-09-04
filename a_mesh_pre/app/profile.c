@@ -24,6 +24,7 @@
 #include "ble_mesh.h"
 #include "profile.h"
 #include "..\..\project_common\project_common.h"
+#include "ble_mesh_app.h"
 
 #if defined __cplusplus
     extern "C" {
@@ -31,7 +32,6 @@
 
 #define OTA_ADV_HANDLE (0x05) // Attention: must not use the handle > 5
 #define BREATH_MODE_DURATION  10000
-
 
 static uint16_t OTA_CONN_HANDLE = INVALID_HANDLE;
 static uint16_t temp_OTA_CONN_HANDLE = INVALID_HANDLE;
@@ -51,12 +51,10 @@ static const uint8_t adv_data[] = {
 static ota_ver_t this_version = {
     .app = {.major = 1, .minor = 2, .patch = 0}
 };
-static unsigned char pub_addr[] = {6, 5, 4, 2, 2, 2};
 #else
 static ota_ver_t this_version = {
     .app = {.major = 1, .minor = 1, .patch = 0}
 };
-static unsigned char pub_addr[] = {6, 5, 4, 1, 1, 1};
 #endif
 
 static uint8_t addr2[8] = {0x01, 0x01, 0x01, 0x04, 0x05, 0x06};
@@ -77,14 +75,76 @@ static int output_string(const char *str)
 }
 #endif
 
-static uint16_t att_ota_read_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t offset, uint8_t * buffer, uint16_t buffer_size)
+uint16_t att_ota_read_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t offset, uint8_t * buffer, uint16_t buffer_size)
 {
     return ota_read_callback(att_handle, offset, buffer, buffer_size);
 }
 
-static int att_ota_write_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset,const uint8_t *buffer, uint16_t buffer_size)
+int att_ota_write_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset,const uint8_t *buffer, uint16_t buffer_size)
 {
     return ota_write_callback(att_handle, transaction_mode, offset, (uint8_t*)buffer, buffer_size);
+}
+
+static void user_msg_handler(uint32_t msg_id, void *data, uint16_t size)
+{
+    uint8_t key_status = 0;
+    uint8_t msg[3] = {0x00, 0x00, 0x00};
+    app_request_t pmsg = {0};
+
+    switch (msg_id) {
+        case USER_MSG_ID_REQUEST_SEND_KB1:
+            if (service_is_ready(0)) {
+                pmsg.model = get_model_by_id(BT_MESH_MODEL_ID_GEN_ONOFF_SRV);
+                if (!pmsg.model) {
+                    dbg_printf("model not exist\n");
+                    return;
+                }
+                pmsg.app_idx = 0;
+                pmsg.dst = 0x015e;
+                pmsg.opcode = BT_MESH_MODEL_OP_2(0x82, 0x04);
+                if (1 == g_ble_mesh_light_model_onoff_state) {
+                    key_status = 0;
+                    g_ble_mesh_light_model_onoff_state = 0;
+                    set_led_color(0, 0, 0);
+                } else {
+                    g_ble_mesh_light_model_onoff_state = 1;
+                    key_status = 1;
+                    set_led_color(50, 50, 50);
+                }
+                memset(msg, key_status, sizeof(msg));
+                memcpy(pmsg.msg, msg, 3);
+                pmsg.len = 3;
+                pmsg.bear = 1;
+                mesh_service_trigger((uint8_t*)&pmsg, sizeof(app_request_t));
+                dbg_printf("mesh service trigger 0x8204 light status !!\r\n");
+            }
+            break;
+
+        case USER_MSG_ID_REQUEST_SEND_KB2:
+            if(service_is_ready(0)) {
+                pmsg.model = get_model_by_id(0x01A8);
+                if (!pmsg.model) {
+                    dbg_printf("model not exist\n");
+                    return;
+                }
+                pmsg.app_idx = 0;
+                pmsg.dst = 0xF000;
+                pmsg.opcode = BT_MESH_MODEL_OP_3(0xD4, 0x01A8);
+                vnd_msg[0]++;
+                memcpy(pmsg.msg, vnd_msg, 4);
+                pmsg.len = 4;
+                pmsg.bear = 1;
+                mesh_service_trigger((uint8_t*)&pmsg, sizeof(app_request_t));
+                dbg_printf("mesh service trigger Hardrest event 0x23!!\r\n");
+            }
+            break;
+
+        case USER_MSG_MESH_INIT_DONE:
+            break;
+
+        default:
+            break;
+    }
 }
 
 void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *packet, uint16_t size)
@@ -212,11 +272,11 @@ uint32_t setup_profile(void *data, void *user_data)
     init_ota_service();
     att_server_init(att_ota_read_callback, att_ota_write_callback);
 
+    ble_mesh_profile_env_init();
+
     hci_event_callback_registration.callback = &user_packet_handler;
     hci_add_event_handler(&hci_event_callback_registration);
     att_server_register_packet_handler(&user_packet_handler);
-
-    ble_mesh_profile_env_init();
 
     return 0;
 }

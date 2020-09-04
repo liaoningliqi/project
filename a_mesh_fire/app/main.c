@@ -19,6 +19,7 @@
 #include "ble_mesh_flash_oper.h"
 #include "..\..\project_common\project_common.h"
 #include "ble_mesh_light_model.h"
+#include "ble_mesh_app.h"
 
 #if defined __cplusplus
     extern "C" {
@@ -48,16 +49,11 @@ int app_main()
     platform_set_evt_callback(PLATFORM_CB_EVT_PUTC, (f_platform_evt_cb)cb_putc, NULL);
     chip_peripherals_init();
 
-    fast_switch_monitor_init();
-
-    ble_mesh_light_model_power_on();
+    ble_mesh_app_init();
 
     platform_set_evt_callback(PLATFORM_CB_EVT_PROFILE_INIT, setup_profile, NULL);
 
     platform_config(PLATFORM_CFG_LOG_HCI,0);
-
-    set_mesh_uart_output_func(bt_cmd_data_uart_out_data);
-    mesh_trace_config(PROV_FEA | ACC_LAYER, 7); // PROV_FEA | ACC_LAYER | NET_LAYER
 
     return 0;
 }

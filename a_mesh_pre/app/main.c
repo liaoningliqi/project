@@ -16,8 +16,10 @@
 
 #include "ble_mesh.h"
 #include "chip_peripherals.h"
+#include "ble_mesh_flash_oper.h"
 #include "..\..\project_common\project_common.h"
 #include "ble_mesh_light_model.h"
+#include "ble_mesh_app.h"
 
 #if defined __cplusplus
     extern "C" {
@@ -51,7 +53,7 @@ int app_main()
 
     platform_set_evt_callback(PLATFORM_CB_EVT_PROFILE_INIT, setup_profile, NULL);
 
-    platform_config(PLATFORM_CFG_LOG_HCI, 0);
+    platform_config(PLATFORM_CFG_LOG_HCI,0);
 
     return 0;
 }

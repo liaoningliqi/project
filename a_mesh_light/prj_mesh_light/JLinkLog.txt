@@ -1,0 +1,120 @@
+T2444 000:272.647   SEGGER J-Link V6.82f Log File
+T2444 000:272.885   DLL Compiled: Aug 24 2020 11:15:27
+T2444 000:272.895   Logging started @ 2020-08-25 08:52
+T2444 000:272.901 - 272.904ms
+T2444 000:272.921 JLINK_SetWarnOutHandler(...)
+T2444 000:272.944 - 0.027ms
+T2444 000:272.954 JLINK_OpenEx(...)
+T2444 000:278.366   Firmware: J-Link Lite for Ghostyu compiled Jan 8 2018 13:10:00
+T2444 000:284.625   Hardware: V1.00
+T2444 000:284.643   S/N: 180100254
+T2444 000:284.652   OEM: SEGGER
+T2444 000:284.660   Feature(s): None
+T2444 000:286.380   TELNET listener socket opened on port 19021
+T2444 000:286.528   WEBSRV Starting webserver
+T2444 000:286.608   WEBSRV Failed to put socket into listener state (port 19080)
+T2444 000:286.689   WEBSRV Webserver running on local port 19081
+T2444 000:286.700 - 13.748ms returns "O.K."
+T2444 000:286.757 JLINK_SetErrorOutHandler(...)
+T2444 000:286.765 - 0.010ms
+T2444 000:286.788 JLINK_ExecCommand("ProjectFile = "C:\lq\b_code\b_project\project\a_mesh_fire\prj_mesh_fire\JLinkSettings.ini"", ...). 
+T2444 000:367.766   Ref file found at: C:\Keil_v5\ARM\Segger\JLinkDevices.ref
+T2444 000:367.917   XML referenced by ref file: C:\Program Files (x86)\SEGGER\JLink\JLinkDevices.xml
+T2444 000:368.729   C:\Program Files (x86)\SEGGER\JLink\JLinkDevices.xml evaluated successfully.
+T2444 000:407.146   Device "CORTEX-M0" selected.
+T2444 000:408.400 - 121.620ms returns 0x00
+T2444 000:408.449 JLINK_ExecCommand("Device = ING91800", ...). 
+T2444 000:408.665   Device "CORTEX-M0" selected.
+T2444 000:409.567 - 1.121ms returns 0x00
+T2444 000:409.597 JLINK_GetHardwareVersion()
+T2444 000:409.624 - 0.029ms returns 10000
+T2444 000:409.633 JLINK_GetDLLVersion()
+T2444 000:409.639 - 0.008ms returns 68206
+T2444 000:409.648 JLINK_GetOEMString(...)
+T2444 000:409.655 JLINK_GetFirmwareString(...)
+T2444 000:409.661 - 0.009ms
+T2444 000:409.686 JLINK_GetDLLVersion()
+T2444 000:409.692 - 0.008ms returns 68206
+T2444 000:409.699 JLINK_GetCompileDateTime()
+T2444 000:409.704 - 0.008ms
+T2444 000:409.713 JLINK_GetFirmwareString(...)
+T2444 000:409.718 - 0.008ms
+T2444 000:409.727 JLINK_GetHardwareVersion()
+T2444 000:409.733 - 0.008ms returns 10000
+T2444 000:409.742 JLINK_GetSN()
+T2444 000:409.747 - 0.008ms returns 180100254
+T2444 000:409.756 JLINK_GetOEMString(...)
+T2444 000:409.769 JLINK_TIF_Select(JLINKARM_TIF_SWD)
+T2444 000:411.113 - 1.353ms returns 0x00
+T2444 000:411.155 JLINK_HasError()
+T2444 000:411.193 JLINK_SetSpeed(5000)
+T2444 000:411.382 - 0.196ms
+T2444 000:411.675 JLINK_HasError()
+T2444 000:411.686 JLINK_SetResetType(JLINKARM_RESET_TYPE_NORMAL)
+T2444 000:411.692 - 0.009ms returns JLINKARM_RESET_TYPE_NORMAL
+T2444 000:411.700 JLINK_Reset()
+T2444 000:413.097   Found SW-DP with ID 0x2BA01477
+T2444 000:418.096   Old FW that does not support reading DPIDR via DAP jobs
+T2444 000:424.393   Unknown DP version. Assuming DPv0
+T2444 000:424.412   Scanning AP map to find all available APs
+T2444 000:428.160   AP[1]: Stopped AP scan as end of AP map has been reached
+T2444 000:428.196   AP[0]: AHB-AP (IDR: 0x24770011)
+T2444 000:428.206   Iterating through AP map to find AHB-AP to use
+T2444 000:434.887   AP[0]: Core found
+T2444 000:434.932   AP[0]: AHB-AP ROM base: 0xE00FF000
+T2444 000:438.029   CPUID register: 0x412FC231. Implementer code: 0x41 (ARM)
+T2444 000:438.056   Found Cortex-M3 r2p1, Little endian.
+T2444 000:538.401   Identified core does not match configuration. (Found: Cortex-M3, Configured: Cortex-M0)
+T2444 000:539.338   -- Max. mem block: 0x00001F68
+T2444 000:539.379   CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T2444 000:540.307   CPU_ReadMem(4 bytes @ 0xE0002000)
+T2444 000:540.990   FPUnit: 6 code (BP) slots and 2 literal slots
+T2444 000:541.005   CPU_ReadMem(4 bytes @ 0xE000EDFC)
+T2444 000:541.624   CPU_ReadMem(4 bytes @ 0xE0001000)
+T2444 000:542.279   CPU_WriteMem(4 bytes @ 0xE0001000)
+T2444 000:543.012   CPU_ReadMem(4 bytes @ 0xE000ED88)
+T2444 000:543.603   CPU_WriteMem(4 bytes @ 0xE000ED88)
+T2444 000:544.312   CPU_ReadMem(4 bytes @ 0xE000ED88)
+T2444 000:544.965   CPU_WriteMem(4 bytes @ 0xE000ED88)
+T2444 000:545.606   CoreSight components:
+T2444 000:545.621   ROMTbl[0] @ E00FF000
+T2444 000:545.631   CPU_ReadMem(64 bytes @ 0xE00FF000)
+T2444 000:546.933   CPU_ReadMem(32 bytes @ 0xE000EFE0)
+T2444 000:547.833   ROMTbl[0][0]: E000E000, CID: B105E00D, PID: 000BB000 SCS
+T2444 000:547.860   CPU_ReadMem(32 bytes @ 0xE0001FE0)
+T2444 000:548.716   ROMTbl[0][1]: E0001000, CID: B105E00D, PID: 003BB002 DWT
+T2444 000:548.732   CPU_ReadMem(32 bytes @ 0xE0002FE0)
+T2444 000:549.555   ROMTbl[0][2]: E0002000, CID: B105E00D, PID: 002BB003 FPB
+T2444 000:549.583   CPU_ReadMem(32 bytes @ 0xE0000FE0)
+T2444 000:550.460   ROMTbl[0][3]: E0000000, CID: B105E00D, PID: 003BB001 ITM
+T2444 000:550.486   CPU_ReadMem(32 bytes @ 0xE0040FE0)
+T2444 000:551.364   ROMTbl[0][4]: E0040000, CID: B105900D, PID: 003BB923 TPIU-Lite
+T2444 000:562.151   CPU is running
+T2444 000:562.170   CPU_WriteMem(4 bytes @ 0xE000EDF0)
+T2444 000:562.801   CPU is running
+T2444 000:562.814   CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T2444 000:563.490   Reset: Halt core after reset via DEMCR.VC_CORERESET.
+T2444 000:564.303   Reset: Reset device via AIRCR.SYSRESETREQ.
+T2444 000:564.316   CPU is running
+T2444 000:564.325   CPU_WriteMem(4 bytes @ 0xE000ED0C)
+T2444 000:617.938   CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T2444 000:618.888   CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T2444 000:619.851   CPU is running
+T2444 000:619.885   CPU_WriteMem(4 bytes @ 0xE000EDF0)
+T2444 000:620.851   CPU is running
+T2444 000:620.880   CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T2444 000:626.875   CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T2444 000:633.832   CPU_WriteMem(4 bytes @ 0xE0002000)
+T2444 000:635.049   CPU_ReadMem(4 bytes @ 0xE000EDFC)
+T2444 000:636.116   CPU_ReadMem(4 bytes @ 0xE0001000)
+T2444 000:637.183 - 225.525ms
+T2444 000:637.373 JLINK_GetId()
+T2444 000:639.189 - 1.863ms returns 0x2BA01477
+T2444 000:666.423 JLINK_GetFirmwareString(...)
+T2444 000:666.465 - 0.051ms
+T2444 035:527.288 JLINK_Close()
+T2444 035:527.773   CPU_ReadMem(4 bytes @ 0xE0001000)
+T2444 035:528.303   CPU_WriteMem(4 bytes @ 0xE0001004)
+T2444 035:544.941 - 17.672ms
+T2444 035:544.964   
+T2444 035:544.970   Closed

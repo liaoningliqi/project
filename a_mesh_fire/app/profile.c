@@ -24,6 +24,7 @@
 #include "ble_mesh.h"
 #include "profile.h"
 #include "..\..\project_common\project_common.h"
+#include "ble_mesh_app.h"
 
 #if defined __cplusplus
     extern "C" {
@@ -31,8 +32,6 @@
 
 #define OTA_ADV_HANDLE (0x05) // Attention: must not use the handle > 5
 #define BREATH_MODE_DURATION  10000
-
-static uint8_t mesh_bt_dev_name[8] = {'I', 'n', 'g', '_', 'a', '\0'};
 
 static uint16_t OTA_CONN_HANDLE = INVALID_HANDLE;
 static uint16_t temp_OTA_CONN_HANDLE = INVALID_HANDLE;
@@ -52,12 +51,10 @@ static const uint8_t adv_data[] = {
 static ota_ver_t this_version = {
     .app = {.major = 1, .minor = 2, .patch = 0}
 };
-static unsigned char pub_addr[] = {6, 5, 4, 2, 2, 2};
 #else
 static ota_ver_t this_version = {
     .app = {.major = 1, .minor = 1, .patch = 0}
 };
-static unsigned char pub_addr[] = {6, 5, 4, 1, 1, 1};
 #endif
 
 static uint8_t addr2[8] = {0x01, 0x01, 0x01, 0x04, 0x05, 0x06};
@@ -78,12 +75,12 @@ static int output_string(const char *str)
 }
 #endif
 
-uint16_t att_read_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t offset, uint8_t * buffer, uint16_t buffer_size)
+static uint16_t att_ota_read_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t offset, uint8_t * buffer, uint16_t buffer_size)
 {
     return ota_read_callback(att_handle, offset, buffer, buffer_size);
 }
 
-int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset,const uint8_t *buffer, uint16_t buffer_size)
+static int att_ota_write_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset,const uint8_t *buffer, uint16_t buffer_size)
 {
     return ota_write_callback(att_handle, transaction_mode, offset, (uint8_t*)buffer, buffer_size);
 }
@@ -150,7 +147,7 @@ static void user_msg_handler(uint32_t msg_id, void *data, uint16_t size)
     }
 }
 
-void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *packet, uint16_t size)
+static void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *packet, uint16_t size)
 {
     uint8_t event = hci_event_packet_get_type(packet);
     const btstack_user_msg_t *p_user_msg;
@@ -218,7 +215,7 @@ void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *p
                     if ((OTA_ADV_HANDLE == packet[4]) && (temp_OTA_CONN_HANDLE != INVALID_HANDLE)) {
                         OTA_CONN_HANDLE = temp_OTA_CONN_HANDLE;
                         att_set_db(OTA_CONN_HANDLE, att_db_storage);
-                        att_server_init(att_read_callback, att_write_callback);
+                        att_server_init(att_ota_read_callback,att_ota_write_callback);
                         dbg_printf("OTA_SERVICE connected\n");
                     }
                     break;
@@ -250,37 +247,26 @@ void user_packet_handler(uint8_t packet_type, uint16_t channel, const uint8_t *p
     }
 }
 
- uint8_t *init_service()
+static void init_ota_service()
 {
-    att_db_util_init(att_db_storage, sizeof(att_db_storage));
     ota_init_service(&this_version);
+    att_server_init(att_ota_read_callback, att_ota_write_callback);
 
-    return att_db_storage;
-}
-
-void update_led_command(remote_control_adv_t remote_control_adv_t, uint8_t length)
-{
     return;
-}
-
-int flash_erase_and_write(uint8_t *flash_area, uint32_t off, uint32_t *src, uint32_t len)
-{
-    return program_flash((uint32_t)flash_area, (uint8_t*)src,len);
 }
 
 uint32_t setup_profile(void *data, void *user_data)
 {
     dbg_printf("setup profile\r\n");
-    mesh_env_init();
+    att_db_util_init(att_db_storage, sizeof(att_db_storage));
 
-    init_service();
-    att_server_init(att_read_callback, att_write_callback);
+    init_ota_service();
+
+    ble_mesh_profile_env_init();
+
     hci_event_callback_registration.callback = &user_packet_handler;
     hci_add_event_handler(&hci_event_callback_registration);
     att_server_register_packet_handler(&user_packet_handler);
-
-    mesh_set_dev_name((char*)mesh_bt_dev_name);
-    create_mesh_task();
 
     return 0;
 }

@@ -20,7 +20,7 @@
 #endif
 
 #define KB_KEY_1 GIO_GPIO_1
-#define PIN_LED_1 GIO_GPIO_0
+#define PIN_LED_1 GIO_GPIO_6
 
 #define USER_UART0_IO_TX GIO_GPIO_2
 #define USER_UART0_IO_RX GIO_GPIO_3
@@ -87,6 +87,13 @@ static void peripherals_config_uart_user()
 
     peripherals_config_uart(USR_UART_IO_PORT, OSC_CLK_FREQ, 115200);
 
+    return;
+}
+
+void set_led_color(uint8_t r, uint8_t g, uint8_t b)
+{
+    uint8_t led_on = ((r == 0) ? 1 : 0);
+    GIO_WriteValue(PIN_LED_1, led_on);
     return;
 }
 

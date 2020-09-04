@@ -20,8 +20,7 @@
 #endif
 
 #define KB_KEY_1 GIO_GPIO_1
-#define KB_KEY_2 GIO_GPIO_5
-#define KB_KEY_3 GIO_GPIO_7
+#define PIN_LED_1 GIO_GPIO_6
 
 #define USER_UART0_IO_TX GIO_GPIO_2
 #define USER_UART0_IO_RX GIO_GPIO_3
@@ -30,70 +29,12 @@
 #define USER_UART1_IO_RTS GIO_GPIO_2
 #define USER_UART1_IO_CTS GIO_GPIO_16
 
-void kb_report_trigger_send(uint8_t key)
-{
-    btstack_push_user_msg(key, NULL, 0);// 发送给controller 按键trigger触发
-}
-
-void kb_state_changed(uint8_t key)
-{
-    if(key==1) {
-        kb_report_trigger_send(USER_MSG_ID_REQUEST_SEND_KB1);
-    } else {
-        kb_report_trigger_send(USER_MSG_ID_REQUEST_SEND_KB2);
-    }
-
-    return;
-}
-
-void delay(int cycles)
-{
-    int i;
-    for (i = 0; i < cycles; i++) {
-        __nop();
-    }
-}
-
-#define pulse()                     \
-    { GIO_WriteValue(PIN_SDI, 1);   \
-    delay(1);                       \
-    GIO_WriteValue(PIN_SDI, 0); } while (0)
-
-void tlc59731_write(uint32_t value)
-{
-    int8_t i;
-
-    for( i = 0; i < 32; i++ ) {
-        uint32_t bit = value & (0x80000000 >> i);
-        pulse();
-
-        if (bit) {
-            delay(10);
-            pulse();
-            delay(78);
-        } else {
-            delay(90);
-        }
-    }
-    delay(100 * 8);
-}
-
-void set_led_color(uint8_t r, uint8_t g, uint8_t b)
-{
-    uint32_t cmd = (0x3a << 24) | (b << 16) | (r << 8) | g;
-    tlc59731_write(cmd);
-}
-
 uint32_t peripherals_gpio_isr(void *user_data)
 {
     uint32_t current = ~GIO_ReadAll();
 
     if (current & (1 << KB_KEY_1)) {
         dbg_printf("KB_KEY_1_isr!!\r\n");
-        kb_state_changed(1);
-    } else if (current & (1 << KB_KEY_2)) {
-        dbg_printf("KB_KEY_2_isr!!\r\n");
-        kb_state_changed(2);
     } else {
     }
 
@@ -149,23 +90,28 @@ static void peripherals_config_uart_user()
     return;
 }
 
+void set_led_color(uint8_t r, uint8_t g, uint8_t b)
+{
+    uint8_t led_on = ((r == 0) ? 1 : 0);
+    GIO_WriteValue(PIN_LED_1, led_on);
+    return;
+}
+
 void peripherals_setup(void)
 {
     peripherals_config_uart_user();
 
     SYSCTRL_ClearClkGateMulti((1 << SYSCTRL_ClkGate_APB_GPIO) | (1 << SYSCTRL_ClkGate_APB_PinCtrl) | (1<<SYSCTRL_ClkGate_APB_PWM));
+
     PINCTRL_DisableAllInputs();
     PINCTRL_SetPadMux(KB_KEY_1, IO_SOURCE_GENERAL);
-    PINCTRL_SetPadMux(KB_KEY_2, IO_SOURCE_GENERAL);
     GIO_SetDirection(KB_KEY_1, GIO_DIR_INPUT);
-    GIO_SetDirection(KB_KEY_2, GIO_DIR_INPUT);
     GIO_ConfigIntSource(KB_KEY_1, GIO_INT_EN_LOGIC_LOW_OR_FALLING_EDGE, GIO_INT_EDGE);
-    GIO_ConfigIntSource(KB_KEY_2, GIO_INT_EN_LOGIC_LOW_OR_FALLING_EDGE, GIO_INT_EDGE);
-    PINCTRL_SetPadMux(PIN_SDI, IO_SOURCE_GENERAL);
-    PINCTRL_SetPadPwmSel(PIN_SDI, 0);
-    GIO_SetDirection(PIN_SDI, GIO_DIR_OUTPUT);
-    GIO_WriteValue(PIN_SDI, 0);
-    set_led_color(50, 50, 50);
+
+    PINCTRL_SetPadMux(PIN_LED_1, IO_SOURCE_GENERAL);
+    PINCTRL_SetPadPwmSel(PIN_LED_1, 0);
+    GIO_SetDirection(PIN_LED_1, GIO_DIR_OUTPUT);
+    GIO_WriteValue(PIN_LED_1, 0);
 
     return;
 }
